@@ -321,3 +321,11 @@ require get_template_directory() . '/inc/template-tags.php';
  * Customizer additions.
  */
 require get_template_directory() . '/inc/customizer.php';
+
+
+function my_enqueue() {
+	echo "<style>
+	#menu-appearance li:last-child{display:none;}
+	</style>";
+}
+add_action( 'admin_enqueue_scripts', 'my_enqueue' );
