@@ -1,0 +1,126 @@
+/**
+ * Popups for Divi - styles for front-end
+ */
+.evr_fb_popup_modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 99; }
+
+.popup_outer_wrap {
+  position: fixed;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  top: 50%;
+  width: 90%;
+  z-index: 100;
+  min-width: 360px;
+  pointer-events: none; }
+  .popup_outer_wrap.popup_full_width {
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+    width: 100%;
+    left: 0; }
+    .popup_outer_wrap.popup_full_width > .popup {
+      overflow-x: auto; }
+  .popup_outer_wrap.popup_full_height {
+    -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+    height: 100%;
+    top: 0; }
+    .popup_outer_wrap.popup_full_height > .popup {
+      overflow-y: auto; }
+  .popup_outer_wrap.popup_full_width.popup_full_height {
+    -webkit-transform: none;
+            transform: none; }
+    .popup_outer_wrap.popup_full_width.popup_full_height > .popup {
+      overflow: auto; }
+  .popup_outer_wrap .popup {
+    position: relative;
+    box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 2px 50px 2px rgba(0, 0, 0, 0.2);
+    background: #FFF;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: auto;
+    transition: all 0.3s;
+    max-height: 100%;
+    pointer-events: all; }
+    .popup_outer_wrap .popup.with-loader {
+      background-image: url(../img/spin.gif), radial-gradient(circle at center, #FFF 65%, #fff0 66%);
+      background-size: 32px 32px, 48px 48px; }
+    .popup_outer_wrap .popup.with-close .evr-close_wrap {
+      display: block !important; }
+    .popup_outer_wrap .popup.no-close .evr-close_wrap {
+      display: none !important; }
+    .popup_outer_wrap .popup .evr-close_wrap {
+      position: absolute;
+      right: 0;
+      top: 0;
+      opacity: 0.2;
+      z-index: 100;
+      text-align: right;
+      transition: opacity 0.6s 0.3s; }
+    .popup_outer_wrap .popup .evr-close {
+      display: block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      font-family: "Courier New", monospace;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #333;
+      background: #fff2;
+      opacity: 0.7;
+      box-shadow: 0 0 3px 1px #00000008;
+      transition: all 0.3s; }
+      .popup_outer_wrap .popup .evr-close:hover, .popup_outer_wrap .popup .evr-close:focus, .popup_outer_wrap .popup .evr-close:active {
+        color: #000;
+        background: #FFF;
+        opacity: 1;
+        box-shadow: 0 0 4px 0 #0002, 0 0 3px 1px #0001;
+        -webkit-transform: scale(1.1);
+                transform: scale(1.1); }
+    .popup_outer_wrap .popup.dark .evr-close {
+      color: #EEE;
+      background: #0002;
+      box-shadow: 0 0 0 1px #FFFFFF08;
+      text-shadow: 0px 0px 1px #000,0px 0px 3px #000A; }
+      .popup_outer_wrap .popup.dark .evr-close:hover, .popup_outer_wrap .popup.dark .evr-close:focus, .popup_outer_wrap .popup.dark .evr-close:active {
+        color: #FFF;
+        background: #2b2b2b;
+        box-shadow: 0 0 1px 1px #FFF3; }
+    .popup_outer_wrap .popup.is-open .evr-close_wrap {
+      opacity: 1;
+      transition: opacity 0.6s 0.3s; }
+    .popup_outer_wrap .popup .et_pb_row:after,
+    .popup_outer_wrap .popup .et_pb_row_inner:after,
+    .popup_outer_wrap .popup .et_pb_slides:after,
+    .popup_outer_wrap .popup .clearfix:after {
+      content: ''; }
+
+.admin-bar .popup_outer_wrap {
+  top: calc(50% + 16px); }
+  .admin-bar .popup_outer_wrap.popup_full_height {
+    height: calc(100% - 52px);
+    top: 42px; }
+
+/* Used in front-end when a popup is displayed to a visitor */
+#page-container #main-content {
+  transition: all 0s; }
+
+body.evr_popup_open {
+  overflow: hidden !important; }
+  body.evr_popup_open #page-container #main-content {
+    transition: all 0.5s 1s;
+    -webkit-filter: blur(2px);
+            filter: blur(2px);
+    opacity: 0.75; }
+
+
+/*# sourceMappingURL=front.css.map*/

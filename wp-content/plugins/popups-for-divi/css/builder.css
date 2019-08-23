@@ -1,0 +1,51 @@
+/**
+ * Popups for Divi - styles in page builder
+ */
+#et-fb-app .et_pb_section.popup {
+  box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 0 20px 2px rgba(0, 0, 0, 0.2);
+  margin: 30px auto;
+  min-width: 360px;
+  width: 90%;
+  background: #FFF; }
+  #et-fb-app .et_pb_section.popup + .et_pb_section.popup {
+    margin-top: 60px; }
+  #et-fb-app .et_pb_section.popup:after {
+    content: '';
+    position: absolute;
+    background: rgba(0, 0, 0, 0.2);
+    left: 50%;
+    top: -30px;
+    bottom: -30px;
+    z-index: -1;
+    width: 10000px;
+    min-width: 100vw;
+    -webkit-transform: translateX(-50%);
+            transform: translateX(-50%); }
+  #et-fb-app .et_pb_section.popup:before {
+    content: "#" attr(id);
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    -webkit-transform: translate(-50%, -100%);
+            transform: translate(-50%, -100%);
+    background: #666;
+    padding: 0 8px;
+    color: #FFF;
+    font-size: 12px;
+    line-height: 26px;
+    font-weight: bold;
+    opacity: 0.5;
+    transition: all 0.3s;
+    bottom: auto;
+    right: auto;
+    z-index: 20;
+    border-radius: 3px 3px 0 0; }
+  #et-fb-app .et_pb_section.popup:hover:before {
+    background: #2B87DA;
+    opacity: 1; }
+
+.et_fb_hidden_header #et-fb-app .et_pb_section.popup:after {
+  width: 100vw; }
+
+
+/*# sourceMappingURL=builder.css.map*/
