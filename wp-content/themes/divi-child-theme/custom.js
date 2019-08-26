@@ -9,8 +9,9 @@ jQuery(document).ready(function( $ ) {
 	   });
 	jQuery("#free_date_timepicker_start").change(function(){
 		var start_datet =  jQuery('#free_date_timepicker_start').val();
-		//var hours = start_datet.getHours();
-		//alert(hours);
+		
+		//start_datet.setHours(start_datet.getHours()+1);
+		
 		jQuery('#free_date_timepicker_end').val(start_datet);
 	});   
 	  
