@@ -119,7 +119,6 @@ jQuery(document).ready(function( $ ) {
 		var d_end_date = jQuery( '#daily_datetimepicker_end' ).val();
 		var days_num = jQuery('#no_of_days').val();
 		
-		
 		if(d_start_date != "" || d_end_date != ""){  
 			var daily_url = jQuery(this).attr('href');
 			var daily_start_date = daily_url.replace("f_s_date", d_start_date);
@@ -127,6 +126,46 @@ jQuery(document).ready(function( $ ) {
 			var daily_quantity = daily_end_date.replace("quantity=1", "quantity="+days_num);			
 			var daily_final_url = jQuery('#daily_package_btn').attr("href", daily_quantity);
 			
+		}
+		else{
+			jQuery('.free_error_msg').show();
+			return false;
+		}
+	});
+	
+	// Yearly Package
+	jQuery('#yearly_datetimepicker_start').datetimepicker({
+		minDate: 0,
+		minDateTime: minDateTime,
+		todayButton: true,
+    });
+	jQuery("#yearly_datetimepicker_start").change(function(){
+		var yearly_start_date =  jQuery('#yearly_datetimepicker_start').val();
+		var yearly_start_date =  new Date(yearly_start_date);
+		
+		var month = ('0' + (yearly_start_date.getMonth()+1)).slice(-2);
+		var year = yearly_start_date.getFullYear();
+		var day = ('0'+yearly_start_date.getDate()).slice(-2);
+		
+		var year_end = parseInt(year) + parseInt(1);
+		console.log(year_end);
+		
+		var hour = yearly_start_date.getHours();
+		var min = ('0'+yearly_start_date.getMinutes()).slice(-2);
+		var sec = ('0'+yearly_start_date.getMilliseconds()).slice(-2);
+		
+		new_start_date = year_end+'/'+month+'/'+day+' '+hour+':'+min;
+		jQuery('#yearly_datetimepicker_end').val(new_start_date);
+	});
+	
+	jQuery('#yearly_pkg #yearly_package_btn').click(function() {
+		var y_start_date = jQuery( '#yearly_datetimepicker_start' ).val();
+		var y_end_date = jQuery( '#yearly_datetimepicker_end' ).val();
+		if(y_start_date != "" || y_end_date != ""){  
+			var free_url = jQuery(this).attr('href');
+			var free_new_url = free_url.replace("f_s_date", y_start_date);
+			var free_neww_url = free_new_url.replace("f_e_date", y_end_date);  
+			var free_final_url = jQuery('#yearly_package_btn').attr("href", free_neww_url);
 		}
 		else{
 			jQuery('.free_error_msg').show();
