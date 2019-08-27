@@ -58,7 +58,7 @@ if ( ! is_page_template( 'page-template-blank.php' ) ) : ?>
 	</div> <!-- #page-container -->
 
 	<?php wp_footer(); ?>
-	<script>
+<script>
 jQuery(document).ready(function( $ ) {
 
 	jQuery('#free_package_btn').click(function() {
@@ -77,7 +77,6 @@ jQuery(document).ready(function( $ ) {
     }
   });
  }); 
-	
-	</script>
+</script>
 </body>
 </html>

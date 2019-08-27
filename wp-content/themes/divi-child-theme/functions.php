@@ -69,3 +69,48 @@ function add_custom_data_order_item_meta( $item, $cart_item_key, $values, $order
 		$item->update_meta_data( 'End Time',  $values['free_pkg_end'] );
 	}
 }
+
+// $data = array(
+//     'event_id' => '1196',
+//     'service_type' => 'meeting',
+//     'start_time' => '1566889200',
+//     'end_time' => '1566892800',
+//     'inadvance' => '200',
+//     'tenant_id' => 'camxf'
+// );
+// $req_body = json_encode($data);
+// var_dump($req_body);
+// $curl = curl_init();
+// 	curl_setopt_array($curl, array(
+// 	CURLOPT_URL => "http://rmsrtc.cmi.chinamobile.com/rms/v1/room/?tenant_id=camxf",
+// 	CURLOPT_RETURNTRANSFER => true,
+// 	CURLOPT_ENCODING => "",
+// 	CURLOPT_MAXREDIRS => 10,
+// 	CURLOPT_TIMEOUT => 30,
+// 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+// 	CURLOPT_CUSTOMREQUEST => "POST",
+// 	CURLOPT_POSTFIELDS => $req_body,
+// 	CURLOPT_HTTPHEADER => array(
+// 		"Accept: */*",
+// 		"Cache-Control: no-cache",
+// 		"Connection: keep-alive",
+// 		"Host: rmsrtc.cmi.chinamobile.com",
+// 		"Postman-Token: 37a627b0-4c1e-45d1-a7ba-48b152698222,3d930f0b-5499-4dc4-8f7d-31b85f96acef",
+// 		"User-Agent: PostmanRuntime/7.15.2",
+// 		"accept-encoding: gzip, deflate",
+// 		"cache-control: no-cache",
+// 		"Content-Type: application/json",
+// 		"Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTg0NDcwNzUsInRva2VuIjoiMTFlN2JkMjItM2U0Zi00NzliLTlhZjgtZWUyZGNiYmYxZjRmIn0.fGebX1oaFNOFs2suqQoDsfUIEYRNjtD60FsmWPK1moQ"
+// 	),
+// 	));
+
+// 	$response = curl_exec($curl);
+// 	$err = curl_error($curl);
+// 	curl_close($curl);
+
+// 	if ($err) {
+// 	echo "cURL Error #:" . $err;
+// 	}
+// 	$response = json_decode($response, true);
+// 	echo '<pre>'; var_dump($response); echo '</pre>';
+// 	exit();
