@@ -78,7 +78,7 @@ jQuery(document).ready(function( $ ) {
 			var hourly_start_date = hourly_url.replace("f_s_date", h_start_date);
 			var hourly_end_date = hourly_start_date.replace("f_e_date", h_end_date);
 			var hourly_quantity = hourly_end_date.replace("quantity=1", "quantity="+hour_diff);			
-			var hourly_final_url = jQuery('#free_package_btn').attr("href", hourly_quantity);
+			var hourly_final_url = jQuery('#hourly_package_btn').attr("href", hourly_quantity);
 			
 		}
 		else{
@@ -125,7 +125,7 @@ jQuery(document).ready(function( $ ) {
 			var daily_start_date = daily_url.replace("f_s_date", d_start_date);
 			var daily_end_date = daily_start_date.replace("f_e_date", d_end_date);
 			var daily_quantity = daily_end_date.replace("quantity=1", "quantity="+days_num);			
-			var daily_final_url = jQuery('#free_package_btn').attr("href", daily_quantity);
+			var daily_final_url = jQuery('#daily_package_btn').attr("href", daily_quantity);
 			
 		}
 		else{
