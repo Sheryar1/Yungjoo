@@ -23,7 +23,7 @@ jQuery(document).ready(function( $ ) {
 		var min = ('0'+free_start_date.getMinutes()).slice(-2);
 		var sec = ('0'+free_start_date.getMilliseconds()).slice(-2);
 		
-		newdate = year+'/'+month+'/'+day+' 0'+hour+':'+min;
+		newdate = year+'/'+month+'/'+day+' '+hour+':'+min;
 
 		
 		jQuery('#free_date_timepicker_end').val(newdate);

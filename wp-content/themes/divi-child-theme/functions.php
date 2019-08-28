@@ -65,52 +65,127 @@ function display_custom_item_data( $cart_item_data, $cart_item ) {
 add_action( 'woocommerce_checkout_create_order_line_item', 'add_custom_data_order_item_meta', 20, 4 );
 function add_custom_data_order_item_meta( $item, $cart_item_key, $values, $order ) {
     if ( isset( $values['free_pkg_start'] ) ||  isset( $values['free_pkg_end'] ) ){
-        $item->update_meta_data( 'Start Time',  $values['free_pkg_start'] );
-		$item->update_meta_data( 'End Time',  $values['free_pkg_end'] );
+        $item->update_meta_data( 'start_time',  $values['free_pkg_start'] );
+		$item->update_meta_data( 'end_time',  $values['free_pkg_end'] );
 	}
 }
 
-// $data = array(
-//     'event_id' => '1196',
-//     'service_type' => 'meeting',
-//     'start_time' => '1566889200',
-//     'end_time' => '1566892800',
-//     'inadvance' => '200',
-//     'tenant_id' => 'camxf'
-// );
-// $req_body = json_encode($data);
-// var_dump($req_body);
-// $curl = curl_init();
-// 	curl_setopt_array($curl, array(
-// 	CURLOPT_URL => "http://rmsrtc.cmi.chinamobile.com/rms/v1/room/?tenant_id=camxf",
-// 	CURLOPT_RETURNTRANSFER => true,
-// 	CURLOPT_ENCODING => "",
-// 	CURLOPT_MAXREDIRS => 10,
-// 	CURLOPT_TIMEOUT => 30,
-// 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-// 	CURLOPT_CUSTOMREQUEST => "POST",
-// 	CURLOPT_POSTFIELDS => $req_body,
-// 	CURLOPT_HTTPHEADER => array(
-// 		"Accept: */*",
-// 		"Cache-Control: no-cache",
-// 		"Connection: keep-alive",
-// 		"Host: rmsrtc.cmi.chinamobile.com",
-// 		"Postman-Token: 37a627b0-4c1e-45d1-a7ba-48b152698222,3d930f0b-5499-4dc4-8f7d-31b85f96acef",
-// 		"User-Agent: PostmanRuntime/7.15.2",
-// 		"accept-encoding: gzip, deflate",
-// 		"cache-control: no-cache",
-// 		"Content-Type: application/json",
-// 		"Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTg0NDcwNzUsInRva2VuIjoiMTFlN2JkMjItM2U0Zi00NzliLTlhZjgtZWUyZGNiYmYxZjRmIn0.fGebX1oaFNOFs2suqQoDsfUIEYRNjtD60FsmWPK1moQ"
-// 	),
-// 	));
 
-// 	$response = curl_exec($curl);
-// 	$err = curl_error($curl);
-// 	curl_close($curl);
+add_action('woocommerce_thankyou', 'save_booking_data', 10, 1);
+function save_booking_data($order_id ){
+    $event_id = $order_id;
+	$order = wc_get_order( $order_id );
+	// Get order item meta
+	$items = $order->get_items();
+	$meeting_start = '';
+	$meeting_end = '';
+	
+	// Get the user ID
+    $user_id = get_post_meta($order_id, '_customer_user', true);
+	
+	foreach($items as $item_id => $item){
+			$meeting_start = wc_get_order_item_meta( $item_id, 'start_time', true );
+			$meeting_end = wc_get_order_item_meta( $item_id, 'end_time', true );
+	}
+	$start_timestamp = strtotime($meeting_start);
+	$end_timestamp = strtotime($meeting_end);
+	
+	// Api req
+	 $data = array(
+	     'event_id' => '"'.$event_id.'"',
+	     'service_type' => 'meeting',
+	     'start_time' => $start_timestamp,
+	     'end_time' => $end_timestamp,
+	     'inadvance' => '200',
+	     'tenant_id' => 'camxf'
+	 );
+	 $req_body = json_encode($data);
+	 $curl = curl_init();
+	 	curl_setopt_array($curl, array(
+	 	CURLOPT_URL => "http://rmsrtc.cmi.chinamobile.com/rms/v1/room/?tenant_id=camxf",
+	 	CURLOPT_RETURNTRANSFER => true,
+	 	CURLOPT_ENCODING => "",
+	 	CURLOPT_MAXREDIRS => 10,
+	 	CURLOPT_TIMEOUT => 30,
+	 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	 	CURLOPT_CUSTOMREQUEST => "POST",
+	 	CURLOPT_POSTFIELDS => $req_body,
+	 	CURLOPT_HTTPHEADER => array(
+	 		"Accept: */*",
+	 		"Cache-Control: no-cache",
+	 		"Connection: keep-alive",
+	 		"Host: rmsrtc.cmi.chinamobile.com",
+	 		"Postman-Token: 37a627b0-4c1e-45d1-a7ba-48b152698222,3d930f0b-5499-4dc4-8f7d-31b85f96acef",
+	 		"User-Agent: PostmanRuntime/7.15.2",
+	 		"accept-encoding: gzip, deflate",
+	 		"cache-control: no-cache",
+	 		"Content-Type: application/json",
+	 		"Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTg0NDcwNzUsInRva2VuIjoiMTFlN2JkMjItM2U0Zi00NzliLTlhZjgtZWUyZGNiYmYxZjRmIn0.fGebX1oaFNOFs2suqQoDsfUIEYRNjtD60FsmWPK1moQ"
+	 	),
+	 	));
 
-// 	if ($err) {
-// 	echo "cURL Error #:" . $err;
-// 	}
-// 	$response = json_decode($response, true);
-// 	echo '<pre>'; var_dump($response); echo '</pre>';
-// 	exit();
+	 	$response = curl_exec($curl);
+	 	$err = curl_error($curl);
+	 	curl_close($curl);
+
+	 	if ($err) {
+	 	echo "cURL Error #:" . $err;
+	 	}
+	 	$response = json_decode($response, true);
+		$meeting_host_url = '';
+		$meeting_url_participant = '';
+		
+		foreach($response as $meeting_data){
+			if (is_array($meeting_data)){
+				$meeting_host_url = $meeting_data['url_host'];
+				$meeting_url_participant = $meeting_data['url_participant'];
+			}
+		}
+		// Insert data into Database Table
+		global $wpdb;
+		$table_name = $wpdb->prefix . "bookings";
+		$success = $wpdb->insert( 
+			$table_name, 
+			array( 
+				'event_id' => $event_id, 
+				'host_id' => $user_id, 
+				'host_url' => $meeting_host_url, 
+				'participant_url' => $meeting_url_participant, 
+				'start_time' => $meeting_start, 
+				'end_time' => $meeting_end, 
+			) 
+		);
+		if($success) {
+		 //echo ' Inserted successfully';
+		} 
+		else {
+		   //echo 'not';
+		}
+}
+
+
+
+// Create Database Table
+
+	global $wpdb;
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	$charset_collate = $wpdb->get_charset_collate();
+    $table_name = $wpdb->prefix . "bookings";  //get the database table prefix to create my new table
+if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name) 
+    {
+    $sql = "CREATE TABLE $table_name (
+	
+      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  event_id varchar(100) NOT NULL,
+	  host_id varchar(100) NOT NULL,
+      host_url varchar(255) NOT NULL,
+      participant_url varchar(255) NOT NULL,
+      start_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+      end_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+
+      UNIQUE KEY id (id)
+      
+    ) $charset_collate;";
+    dbDelta( $sql );
+ }
+
