@@ -12,7 +12,7 @@
  * Author:      Philipp Stracker
  * Author URI:  https://philippstracker.com/
  * Created:     30.12.2017
- * Version:     1.5.0
+ * Version:     1.5.1
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: divi-popup
@@ -39,7 +39,7 @@ define( 'DIVI_POPUP_PLUGIN', plugin_basename( __FILE__ ) );
 /**
  * A new version value will force refresh of CSS and JS files for all users.
  */
-define( 'DIVI_POPUP_VERSION', '1.5.0' );
+define( 'DIVI_POPUP_VERSION', '1.5.1' );
 
 add_action(
 	'plugins_loaded',

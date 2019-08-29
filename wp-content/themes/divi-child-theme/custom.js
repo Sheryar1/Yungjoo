@@ -133,7 +133,7 @@ jQuery(document).ready(function( $ ) {
 		}
 	});
 	
-	// Yearly Package
+	// Weekly Package
 	jQuery('#yearly_datetimepicker_start').datetimepicker({
 		minDate: 0,
 		minDateTime: minDateTime,
@@ -147,14 +147,14 @@ jQuery(document).ready(function( $ ) {
 		var year = yearly_start_date.getFullYear();
 		var day = ('0'+yearly_start_date.getDate()).slice(-2);
 		
-		var year_end = parseInt(year) + parseInt(1);
-		console.log(year_end);
+		var month_end = parseInt(month) + parseInt(1);
+		console.log(month_end);
 		
 		var hour = yearly_start_date.getHours();
 		var min = ('0'+yearly_start_date.getMinutes()).slice(-2);
 		var sec = ('0'+yearly_start_date.getMilliseconds()).slice(-2);
 		
-		new_start_date = year_end+'/'+month+'/'+day+' '+hour+':'+min;
+		new_start_date = year+'/'+month_end+'/'+day+' '+hour+':'+min;
 		jQuery('#yearly_datetimepicker_end').val(new_start_date);
 	});
 	

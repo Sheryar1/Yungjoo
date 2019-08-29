@@ -230,6 +230,15 @@ class Popups_For_Divi {
 		$config['exitIndicatorClass'] = 'on-exit';
 
 		/**
+		 * Defines the delay for reacting to exit-intents.
+		 * Default is 2000, which means that an exit intent during the first two
+		 * seconds after page load is ignored.
+		 *
+		 * @since 1.5.1
+		 */
+		$config['onExitDelay'] = 2000;
+
+		/**
 		 * Class to hide a popup on mobile devices.
 		 * Used for non-Divi themes or when creating popups via DiviPopup.register().
 		 *

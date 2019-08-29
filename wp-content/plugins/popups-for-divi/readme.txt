@@ -70,6 +70,11 @@ For more details visit https://philippstracker.com/divi-popup/
 
 == Changelog ==
 
+= 1.5.1 =
+* Fix broken exit-intent intialization (sorry for that!)
+* Fix bug where exit intent did trigger in some form fields, e.g. when closing auto-complete suggestions or changing an option in a select list.
+* Fix setting "animateSpeed" that can be set via the WP filter. It was ignored until now.
+
 = 1.5.0 =
 * Fixed the exit-intent behavior - now it triggers, even when you move the mouse very sloooowly
 * New JS API to turn literally *any* element on the page into a popup: `DiviPopup.register('#the-id')`
