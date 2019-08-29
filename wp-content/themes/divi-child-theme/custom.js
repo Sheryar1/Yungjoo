@@ -172,6 +172,9 @@ jQuery(document).ready(function( $ ) {
 			return false;
 		}
 	});
+	
+	// DataTable
+		jQuery('#example').DataTable();
   
  }); 
 

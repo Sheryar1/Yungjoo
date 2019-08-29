@@ -14,9 +14,12 @@
  * 
  * =============================================================================== */
  
-function divichild_enqueue_scripts() {
+// ------------------
+// Include scripts 
+function ch_enqueue_scripts() {
 	wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
-
+	
+	// Datetimepicker
 	wp_register_style('datepicker_css', get_stylesheet_directory_uri() . '/datetimepicker/jquery.datetimepicker.css' );
 	wp_enqueue_style('datepicker_css');
 
@@ -24,14 +27,52 @@ function divichild_enqueue_scripts() {
 	wp_register_script('datepicker_js', get_stylesheet_directory_uri() . '/datetimepicker/jquery.datetimepicker.full.min.js', array('jquery'), true);
 	wp_enqueue_script('datepicker_js');
 	
+	// DataTables
+	wp_register_style('datatables_css', get_stylesheet_directory_uri() . '/datatables/css/dataTables.bootstrap.min.css' );
+	wp_enqueue_style('datatables_css');
+
+	
+	wp_register_script('datatables_js', get_stylesheet_directory_uri() . '/datatables/js/jquery.dataTables.min.js', array('jquery'), true);
+	wp_enqueue_script('datatables_js');
+	
+	wp_register_script('datatables_bootstrap_js', get_stylesheet_directory_uri() . '/datatables/js/dataTables.bootstrap.min.js', array('jquery'), true);
+	wp_enqueue_script('datatables_bootstrap_js');
+	
+	// Bookings Custom Js
 	wp_register_script('custom_js', get_stylesheet_directory_uri() . '/custom.js', array('jquery'), true);
 	wp_enqueue_script('custom_js');
 }
-add_action( 'wp_enqueue_scripts', 'divichild_enqueue_scripts' );
+add_action( 'wp_enqueue_scripts', 'ch_enqueue_scripts' );
 
+// ------------------
+// Create Database Table for bookings
+
+	global $wpdb;
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	$charset_collate = $wpdb->get_charset_collate();
+    $table_name = $wpdb->prefix . "bookings";  //get the database table prefix to create my new table
+if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name) 
+    {
+    $sql = "CREATE TABLE $table_name (
+	
+      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  event_id varchar(100) NOT NULL,
+	  host_id varchar(100) NOT NULL,
+      host_url varchar(255) NOT NULL,
+      participant_url varchar(255) NOT NULL,
+      start_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+      end_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+
+      UNIQUE KEY id (id)
+      
+    ) $charset_collate;";
+    dbDelta( $sql );
+ }
+
+// ------------------
 // Add custom note as custom cart item data
-add_filter( 'woocommerce_add_cart_item_data', 'get_custom_product_data', 30, 2 );
-function get_custom_product_data( $cart_item_data, $product_id ){
+add_filter( 'woocommerce_add_cart_item_data', 'ch_get_custom_product_data', 30, 2 );
+function ch_get_custom_product_data( $cart_item_data, $product_id ){
     if ( isset($_GET['f_start_date']) && ! empty($_GET['f_start_date']) || isset($_GET['f_end_date']) && ! empty($_GET['f_end_date'])) {
         $cart_item_data['free_pkg_start'] = sanitize_text_field( $_GET['f_start_date'] );
     
@@ -42,10 +83,10 @@ function get_custom_product_data( $cart_item_data, $product_id ){
     return $cart_item_data;
 }
 
-
+// ------------------
 // Display note in cart and checkout pages as cart item data - Optional
-add_filter( 'woocommerce_get_item_data', 'display_custom_item_data', 10, 2 );
-function display_custom_item_data( $cart_item_data, $cart_item ) {
+add_filter( 'woocommerce_get_item_data', 'ch_display_custom_item_data', 10, 2 );
+function ch_display_custom_item_data( $cart_item_data, $cart_item ) {
     if ( isset( $cart_item['free_pkg_start'] ) ||  isset( $cart_item['free_pkg_end'] )){
         $cart_item_data[] = array(
             'name' => "Start Time",
@@ -61,18 +102,20 @@ function display_custom_item_data( $cart_item_data, $cart_item ) {
     return $cart_item_data;
 }
 
+// ------------------
 // Save and display product note in orders and email notifications (everywhere)
-add_action( 'woocommerce_checkout_create_order_line_item', 'add_custom_data_order_item_meta', 20, 4 );
-function add_custom_data_order_item_meta( $item, $cart_item_key, $values, $order ) {
+add_action( 'woocommerce_checkout_create_order_line_item', 'ch_add_custom_data_order_item_meta', 20, 4 );
+function ch_add_custom_data_order_item_meta( $item, $cart_item_key, $values, $order ) {
     if ( isset( $values['free_pkg_start'] ) ||  isset( $values['free_pkg_end'] ) ){
         $item->update_meta_data( 'start_time',  $values['free_pkg_start'] );
 		$item->update_meta_data( 'end_time',  $values['free_pkg_end'] );
 	}
 }
 
-
-add_action('woocommerce_thankyou', 'save_booking_data', 10, 1);
-function save_booking_data($order_id ){
+// ------------------
+// Save Bookings data
+add_action('woocommerce_thankyou', 'ch_save_booking_data', 10, 1);
+function ch_save_booking_data($order_id ){
     $event_id = $order_id;
 	$order = wc_get_order( $order_id );
 	// Get order item meta
@@ -92,7 +135,7 @@ function save_booking_data($order_id ){
 	
 	// Api req
 	 $data = array(
-	     'event_id' => '"'.$event_id.'"',
+	     'event_id' => ''.$event_id.'',
 	     'service_type' => 'meeting',
 	     'start_time' => $start_timestamp,
 	     'end_time' => $end_timestamp,
@@ -163,29 +206,131 @@ function save_booking_data($order_id ){
 		}
 }
 
+// ------------------
+// 4. Get bookings data from DB to show on my-account booking page
 
-
-// Create Database Table
-
+function ch_get_bookings_data(){
 	global $wpdb;
-	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-	$charset_collate = $wpdb->get_charset_collate();
-    $table_name = $wpdb->prefix . "bookings";  //get the database table prefix to create my new table
-if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name) 
-    {
-    $sql = "CREATE TABLE $table_name (
+	$table_name = $wpdb->prefix . "bookings";
+	$bookings = $wpdb->get_results( "SELECT * FROM $table_name" );
+	return $bookings;
+}
+// ------------------
+// 1. Register new endpoint to use for My Account page
+// Note: Resave Permalinks or it will give 404 error
+  
+function ch_add_premium_support_endpoint() {
+    add_rewrite_endpoint( 'booking-details', EP_ROOT | EP_PAGES );
+}
+  
+add_action( 'init', 'ch_add_premium_support_endpoint' );
+  
+  
+// ------------------
+// 2. Add new query var
+  
+function ch_premium_support_query_vars( $vars ) {
+    $vars[] = 'booking-details';
+    return $vars;
+}
+  
+add_filter( 'query_vars', 'ch_premium_support_query_vars', 0 );
+  
+  
+// ------------------
+// 3. Insert the new endpoint into the My Account menu
+  
+function ch_add_premium_support_link_my_account( $items ) {
+    $items['booking-details'] = 'Bookings';
+    return $items;
+}
+  
+add_filter( 'woocommerce_account_menu_items', 'ch_add_premium_support_link_my_account' );
+  
+  
+// ------------------
+// 4. Add content to the new endpoint
+  
+function ch_booking_details_content() {
+	echo '<h3>Bookings</h3>';
 	
-      id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	  event_id varchar(100) NOT NULL,
-	  host_id varchar(100) NOT NULL,
-      host_url varchar(255) NOT NULL,
-      participant_url varchar(255) NOT NULL,
-      start_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-      end_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		$current_user = get_current_user_id();
+	if (function_exists('ch_get_bookings_data')) { 
+		$bookings_data = ch_get_bookings_data();
+	?>
+	<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Meeting Start DateTime</th>
+				<th>Meeting End DateTime</th>
+				<th>Join</th>
+				<th>Invite</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+		foreach($bookings_data as $booking_id => $booking_value){
+			//echo'<pre>';var_dump($booking_value);echo'</pre>';
+			$user_id = $booking_value->host_id;
+			$event_id = $booking_value->event_id;
+			$meeting_start = $booking_value->start_time;
+			$meeting_end = $booking_value->end_time;
+			$host_url = $booking_value->host_url;
+			$participant_url = $booking_value->participant_url;
+			
+			$event_name = '';
+			$order = new WC_Order( $event_id );
+			$items = $order->get_items();
+			foreach($items as $k=>$val){
+				$event_name = $val['name'];
+			}
+			$user = get_userdata($current_user);
+			$user_name = $user->data->display_name;
+			if($current_user == $user_id){
+				//var_dump($host_url);
+				?>
+				<tr>
+					<td><?php echo $event_name; ?></td>
+					<td><?php echo $meeting_start; ?></td>
+					<td><?php echo $meeting_end; ?></td>
+					<td><a href="<?php echo $host_url; ?>&nickName=<?php echo $user_name; ?>" target="_blank">Join</a></td>
+					<td><a id = "participant_popup" >Invite</a></td>
+				</tr>
+				<?php
+			}
+			
+		}
+		?>
+					
+		</tbody>
+	</table>
+	<?php
+	}	
+}
+  
+add_action( 'woocommerce_account_booking-details_endpoint', 'ch_booking_details_content' );
 
-      UNIQUE KEY id (id)
-      
-    ) $charset_collate;";
-    dbDelta( $sql );
- }
+// ------------------
+// 4. Reorder My Acccount Tabs
 
+function ch_my_account_order() {
+	$myorder = array(
+		'dashboard'          => __( 'Dashboard', 'woocommerce' ),
+		'booking-details' => __( 'Bookings', 'woocommerce' ),
+		'edit-account'       => __( 'Account Details', 'woocommerce' ),
+		'customer-logout'    => __( 'Logout', 'woocommerce' ),
+	);
+	return $myorder;
+}
+add_filter ( 'woocommerce_account_menu_items', 'ch_my_account_order' );
+
+add_filter( 'woocommerce_add_to_cart_validation', 'bbloomer_only_one_in_cart', 99, 2 );
+  
+function bbloomer_only_one_in_cart( $passed, $added_product_id ) {
+ 
+// empty cart first: new item will replace previous
+wc_empty_cart();
+ 
+return $passed;
+}
