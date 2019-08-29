@@ -134,38 +134,38 @@ jQuery(document).ready(function( $ ) {
 	});
 	
 	// Weekly Package
-	jQuery('#yearly_datetimepicker_start').datetimepicker({
+	jQuery('#monthly_datetimepicker_start').datetimepicker({
 		minDate: 0,
 		minDateTime: minDateTime,
 		todayButton: true,
     });
-	jQuery("#yearly_datetimepicker_start").change(function(){
-		var yearly_start_date =  jQuery('#yearly_datetimepicker_start').val();
-		var yearly_start_date =  new Date(yearly_start_date);
+	jQuery("#monthly_datetimepicker_start").change(function(){
+		var monthly_start_date =  jQuery('#monthly_datetimepicker_start').val();
+		var monthly_start_date =  new Date(monthly_start_date);
 		
-		var month = ('0' + (yearly_start_date.getMonth()+1)).slice(-2);
-		var year = yearly_start_date.getFullYear();
-		var day = ('0'+yearly_start_date.getDate()).slice(-2);
+		var month = ('0' + (monthly_start_date.getMonth()+1)).slice(-2);
+		var year = monthly_start_date.getFullYear();
+		var day = ('0'+monthly_start_date.getDate()).slice(-2);
 		
 		var month_end = parseInt(month) + parseInt(1);
 		console.log(month_end);
 		
-		var hour = yearly_start_date.getHours();
-		var min = ('0'+yearly_start_date.getMinutes()).slice(-2);
-		var sec = ('0'+yearly_start_date.getMilliseconds()).slice(-2);
+		var hour = monthly_start_date.getHours();
+		var min = ('0'+monthly_start_date.getMinutes()).slice(-2);
+		var sec = ('0'+monthly_start_date.getMilliseconds()).slice(-2);
 		
 		new_start_date = year+'/'+month_end+'/'+day+' '+hour+':'+min;
-		jQuery('#yearly_datetimepicker_end').val(new_start_date);
+		jQuery('#monthly_datetimepicker_end').val(new_start_date);
 	});
 	
-	jQuery('#yearly_pkg #yearly_package_btn').click(function() {
-		var y_start_date = jQuery( '#yearly_datetimepicker_start' ).val();
-		var y_end_date = jQuery( '#yearly_datetimepicker_end' ).val();
-		if(y_start_date != "" || y_end_date != ""){  
+	jQuery('#monthly_pkg #monthly_package_btn').click(function() {
+		var m_start_date = jQuery( '#monthly_datetimepicker_start' ).val();
+		var m_end_date = jQuery( '#monthly_datetimepicker_end' ).val();
+		if(m_start_date != "" || m_end_date != ""){  
 			var free_url = jQuery(this).attr('href');
-			var free_new_url = free_url.replace("f_s_date", y_start_date);
-			var free_neww_url = free_new_url.replace("f_e_date", y_end_date);  
-			var free_final_url = jQuery('#yearly_package_btn').attr("href", free_neww_url);
+			var free_new_url = free_url.replace("f_s_date", m_start_date);
+			var free_neww_url = free_new_url.replace("f_e_date", m_end_date);  
+			var free_final_url = jQuery('#monthly_package_btn').attr("href", free_neww_url);
 		}
 		else{
 			jQuery('.free_error_msg').show();
