@@ -175,6 +175,33 @@ jQuery(document).ready(function( $ ) {
 	
 	// DataTable
 		jQuery('#example').DataTable();
+		
+	// Invite Popup
+	jQuery('.modal-toggle').on('click', function(e) {
+	  e.preventDefault();
+	  jQuery('.modal').toggleClass('is-visible');
+	});	
+	// Add more fields
+	 var max_fields = 25;
+     var add_input_button = jQuery('.add_input_button');
+     var field_wrapper = jQuery('.invite_wrap_inner');
+     var new_field_html = '<div><input type="text" name="participant_name[]" id="participant_name" required /><input type="email" name="participant_email[]" id="participant_email" required /><input type="hidden" name="participant_id[]" value="" /><a href="javascript:void(0);" class="remove_input_button" title="Remove field"><i class="fa fa-times" aria-hidden="true"></i>Remove</a></div>';
+     var input_count = 1;
+     // Add button dynamically
+     jQuery(add_input_button).click(function(){
+	   var $user_id = jQuery('#host_id').val();    	
+       if(input_count < max_fields){
+       	input_count++;
+        jQuery(field_wrapper).append(new_field_html);
+       }
+     });
+	// Remove dynamically added button
+	jQuery(field_wrapper).on('click', '.remove_input_button', function(e){
+		e.preventDefault();
+		jQuery(this).parent('div').remove();
+		input_count--;
+	});
+
   
  }); 
 

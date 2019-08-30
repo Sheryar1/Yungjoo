@@ -70,6 +70,26 @@ if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name)
  }
 
 // ------------------
+// Create Database Table for bookings
+
+		$invite_table_name = $wpdb->prefix . "invitations";  //get the database table prefix to create my new table
+		if($wpdb->get_var( "show tables like '$invite_table_name'" ) != $invite_table_name) 
+			{
+				$sql = "CREATE TABLE $invite_table_name (
+				
+				  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+				  host_id varchar(100) NOT NULL,
+				  participant_id varchar(100) NOT NULL,
+				  participant_name varchar(255) NOT NULL,
+				  participant_email varchar(255) NOT NULL,
+
+				  UNIQUE KEY id (id)
+				  
+				) $charset_collate;";
+				dbDelta( $sql );
+			 }
+
+// ------------------
 // Add custom note as custom cart item data
 add_filter( 'woocommerce_add_cart_item_data', 'ch_get_custom_product_data', 30, 2 );
 function ch_get_custom_product_data( $cart_item_data, $product_id ){
@@ -295,14 +315,69 @@ function ch_booking_details_content() {
 					<td><?php echo $meeting_start; ?></td>
 					<td><?php echo $meeting_end; ?></td>
 					<td><a href="<?php echo $host_url; ?>&nickName=<?php echo $user_name; ?>" target="_blank">Join</a></td>
-					<td><a id = "participant_popup" >Invite</a></td>
+					<td><a id ="participant_popup" class="modal-toggle" >Invite</a></td>
 				</tr>
 				<?php
 			}
 			
 		}
 		?>
-					
+		<?php
+		 // ------------------
+		 // Invitations
+		
+		 if(isset($_POST['submitted'])) {
+				$participant_id = serialize($_POST['participant_id']);
+				$participant_name = serialize($_POST['participant_name']);
+				$participant_email = serialize($_POST['participant_email']);
+				//var_dump($participant_email);
+				//exit();
+			 // Insert data into Database Table
+				global $wpdb;
+				$table_name = $wpdb->prefix . "invitations";
+				$success = $wpdb->insert( 
+					$table_name, 
+					array( 
+						'host_id' => $user_id, 
+						'participant_id' => $participant_id, 
+						'participant_name' => $participant_name, 
+						'participant_email' => $participant_email, 
+					) 
+				);
+				if($success) {
+				 echo ' Inserted successfully';
+				} 
+				else {
+				   echo 'not';
+				}
+		 }
+		?>
+		  <div class="modal">
+			<div class="modal-overlay modal-toggle"></div>
+			<div class="modal-wrapper modal-transition">
+			  <div class="modal-header">
+				<button class="modal-close modal-toggle"><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+				<h2 class="modal-heading">Send Invitations</h2>
+			  </div>
+			  
+			  <div class="modal-body">
+				<div class="modal-content">
+				  <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post" class="invite_wrap">
+						<div class="invite_wrap_inner">
+						  <div>
+							<input type="text" name="participant_name[]" id="participant_name" required />
+							<input type="email" name="participant_email[]" id="participant_email" required />
+							<input type="hidden" name="participant_id[]" value="" id="participant_id" />
+							<a href="javascript:void(0);" class="add_input_button" title="Add field"><i class="fa fa-plus-circle" aria-hidden="true"></i>Add More</a>
+						  </div>
+						</div>
+						<input type="hidden" name="host_id" value="<?php echo $current_user; ?>" id="host_id" />
+						<input type="submit" value="Send Invitation" name="submitted" />
+				  </form>
+				</div>
+			  </div>
+			</div>
+		  </div>			
 		</tbody>
 	</table>
 	<?php
