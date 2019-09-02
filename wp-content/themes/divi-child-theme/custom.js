@@ -185,7 +185,7 @@ jQuery(document).ready(function( $ ) {
 	 var max_fields = 25;
      var add_input_button = jQuery('.add_input_button');
      var field_wrapper = jQuery('.invite_wrap_inner');
-     var new_field_html = '<div><input type="text" name="participant_name[]" id="participant_name" required /><input type="email" name="participant_email[]" id="participant_email" required /><input type="hidden" name="participant_id[]" value="" /><a href="javascript:void(0);" class="remove_input_button" title="Remove field"><i class="fa fa-times" aria-hidden="true"></i>Remove</a></div>';
+     var new_field_html = '<div><input type="text" name="participant_name[]" id="" required /><input type="email" name="participant_email[]" id="" required /><input type="hidden" name="participant_id[]" value="" /><a href="javascript:void(0);" class="remove_input_button" title="Remove field"><i class="fa fa-times" aria-hidden="true"></i>Remove</a></div>';
      var input_count = 1;
      // Add button dynamically
      jQuery(add_input_button).click(function(){

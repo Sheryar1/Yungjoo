@@ -328,11 +328,11 @@ function ch_booking_details_content() {
 		 // Invitations
 		
 		 if(isset($_POST['submitted'])) {
-				$participant_id = serialize($_POST['participant_id']);
-				$participant_name = serialize($_POST['participant_name']);
-				$participant_email = serialize($_POST['participant_email']);
-				//var_dump($participant_email);
-				//exit();
+				$participant_id = $_POST['participant_id'];
+				$participant_name = $_POST['participant_name'];
+				$participant_email = $_POST['participant_email'];
+				var_dump($participant_name);
+				exit();
 			 // Insert data into Database Table
 				global $wpdb;
 				$table_name = $wpdb->prefix . "invitations";
@@ -366,9 +366,9 @@ function ch_booking_details_content() {
 				  <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post" class="invite_wrap">
 						<div class="invite_wrap_inner">
 						  <div>
-							<input type="text" name="participant_name[]" id="participant_name" required />
-							<input type="email" name="participant_email[]" id="participant_email" required />
-							<input type="hidden" name="participant_id[]" value="" id="participant_id" />
+							<input type="text" name="participant_name[]" id="" required />
+							<input type="email" name="participant_email[]" id="" required />
+							<input type="hidden" name="participant_id[]" value="" id="" />
 							<a href="javascript:void(0);" class="add_input_button" title="Add field"><i class="fa fa-plus-circle" aria-hidden="true"></i>Add More</a>
 						  </div>
 						</div>
