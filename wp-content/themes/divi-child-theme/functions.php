@@ -405,7 +405,7 @@ add_filter ( 'woocommerce_account_menu_items', 'ch_my_account_order' );
 add_filter( 'woocommerce_add_cart_item_data', 'woo_custom_add_to_cart' );
 
 function woo_custom_add_to_cart( $cart_item_data ) {
-var_dump("<h1>Text</h1>");
+
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
