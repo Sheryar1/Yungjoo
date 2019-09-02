@@ -407,6 +407,6 @@ function bbloomer_only_one_in_cart( $passed, $added_product_id ) {
  
 // empty cart first: new item will replace previous
 wc_empty_cart();
- 
+ var_dump("<h1>Text</h1>");
 return $passed;
 }
