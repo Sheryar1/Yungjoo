@@ -401,12 +401,14 @@ function ch_my_account_order() {
 }
 add_filter ( 'woocommerce_account_menu_items', 'ch_my_account_order' );
 
-add_filter( 'woocommerce_add_to_cart_validation', 'bbloomer_only_one_in_cart', 10, 2 );
-  
-function bbloomer_only_one_in_cart( $passed, $added_product_id ) {
- 
-// empty cart first: new item will replace previous
-wc_empty_cart();
- var_dump("<h1>Text</h1>");
-return $passed;
+
+add_filter( 'woocommerce_add_cart_item_data', 'woo_custom_add_to_cart' );
+
+function woo_custom_add_to_cart( $cart_item_data ) {
+var_dump("<h1>Text</h1>");
+    global $woocommerce;
+    $woocommerce->cart->empty_cart();
+
+    // Do nothing with the data and return
+    return $cart_item_data;
 }
