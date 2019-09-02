@@ -401,7 +401,7 @@ function ch_my_account_order() {
 }
 add_filter ( 'woocommerce_account_menu_items', 'ch_my_account_order' );
 
-add_filter( 'woocommerce_add_to_cart_validation', 'bbloomer_only_one_in_cart', 99, 2 );
+add_filter( 'woocommerce_add_to_cart_validation', 'bbloomer_only_one_in_cart', 10, 2 );
   
 function bbloomer_only_one_in_cart( $passed, $added_product_id ) {
  
