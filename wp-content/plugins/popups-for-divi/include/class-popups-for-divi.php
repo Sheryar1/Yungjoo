@@ -25,6 +25,12 @@ class Popups_For_Divi {
 			array( $this, 'plugin_add_settings_link' )
 		);
 
+		add_filter(
+			'plugin_row_meta',
+			array( $this, 'plugin_row_meta' ),
+			10, 4
+		);
+
 		// Do not load the JS library, when the Pro version is active.
 		if ( defined( 'DIVI_AREAS_PLUGIN' ) ) {
 			return;
@@ -34,6 +40,10 @@ class Popups_For_Divi {
 			'wp_enqueue_scripts',
 			array( $this, 'enqueue_scripts' )
 		);
+
+		// Load the onboarding wizard.
+		require_once __DIR__ . '/class-popups-for-divi-onboarding.php';
+		$this->onboarding = new Popups_For_Divi_Onboarding();
 	}
 
 	/**
@@ -50,6 +60,33 @@ class Popups_For_Divi {
 			__( 'How it works', 'divi-popup' )
 		);
 		return $links;
+	}
+
+	/**
+	 * Display additional details in the right column of the "Plugins" page.
+	 *
+	 * @since 1.6.0
+	 * @param string[] $plugin_meta An array of the plugin's metadata,
+	 *                              including the version, author,
+	 *                              author URI, and plugin URI.
+	 * @param string   $plugin_file Path to the plugin file relative to the plugins directory.
+	 * @param array    $plugin_data An array of plugin data.
+	 * @param string   $status      Status of the plugin. Defaults are 'All', 'Active',
+	 *                              'Inactive', 'Recently Activated', 'Upgrade', 'Must-Use',
+	 *                              'Drop-ins', 'Search'.
+	 */
+	public function plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data, $status ) {
+		if ( DIVI_POPUP_PLUGIN !== $plugin_file ) {
+			return $plugin_meta;
+		}
+
+		$plugin_meta[] = sprintf(
+			'<a href="%s" target="_blank">%s</a>',
+			'https://philippstracker.com/divi-areas-pro/',
+			__( 'Divi Areas <strong>Pro</strong>', 'divi-popup' )
+		);
+
+		return $plugin_meta;
 	}
 
 	/**
@@ -163,6 +200,28 @@ class Popups_For_Divi {
 		 * @since 1.4.0
 		 */
 		$config['singletonClass'] = 'single';
+
+		/**
+		 * Name of the class that activates the dark mode (dark close button) of the
+		 * popup.
+		 *
+		 * @since 1.6.0
+		 */
+		$config['darkModeClass'] = 'dark';
+
+		/**
+		 * Name of the class that removes the box-shadow from the popup.
+		 *
+		 * @since 1.6.0
+		 */
+		$config['noShadowClass'] = 'no-shadow';
+
+		/**
+		 * Name of the class that changes the popups close button layout.
+		 *
+		 * @since 1.6.0
+		 */
+		$config['altCloseClass'] = 'close-alt';
 
 		/**
 		 * CSS selector used to identify popups.

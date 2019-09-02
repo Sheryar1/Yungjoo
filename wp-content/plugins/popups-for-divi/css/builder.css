@@ -1,12 +1,16 @@
 /**
  * Popups for Divi - styles in page builder
  */
-#et-fb-app .et_pb_section.popup {
+.popup {
   box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 0 20px 2px rgba(0, 0, 0, 0.2);
-  margin: 30px auto;
   min-width: 360px;
-  width: 90%;
-  background: #FFF; }
+  max-width: 95%; }
+
+#et-fb-app .et_pb_section.popup {
+  background-color: #FFF;
+  margin: 30px auto;
+  overflow: visible;
+  z-index: auto; }
   #et-fb-app .et_pb_section.popup + .et_pb_section.popup {
     margin-top: 60px; }
   #et-fb-app .et_pb_section.popup:after {

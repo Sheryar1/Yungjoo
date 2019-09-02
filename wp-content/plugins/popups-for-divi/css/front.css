@@ -1,5 +1,5 @@
 /**
- * Popups for Divi - styles for front-end
+ * Divi Areas Pro - styles for front-end
  */
 .evr_fb_popup_modal {
   position: fixed;
@@ -10,6 +10,9 @@
   background: rgba(0, 0, 0, 0.55);
   z-index: 99; }
 
+.popup:not(.no-shadow) {
+  box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 2px 50px 2px rgba(0, 0, 0, 0.2); }
+
 .popup_outer_wrap {
   position: fixed;
   left: 50%;
@@ -18,7 +21,7 @@
   top: 50%;
   width: 90%;
   z-index: 100;
-  min-width: 360px;
+  min-width: 320px;
   pointer-events: none; }
   .popup_outer_wrap.popup_full_width {
     -webkit-transform: translateY(-50%);
@@ -41,8 +44,6 @@
       overflow: auto; }
   .popup_outer_wrap .popup {
     position: relative;
-    box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 2px 50px 2px rgba(0, 0, 0, 0.2);
-    background: #FFF;
     background-repeat: no-repeat;
     background-position: center center;
     margin: auto;
@@ -52,52 +53,6 @@
     .popup_outer_wrap .popup.with-loader {
       background-image: url(../img/spin.gif), radial-gradient(circle at center, #FFF 65%, #fff0 66%);
       background-size: 32px 32px, 48px 48px; }
-    .popup_outer_wrap .popup.with-close .evr-close_wrap {
-      display: block !important; }
-    .popup_outer_wrap .popup.no-close .evr-close_wrap {
-      display: none !important; }
-    .popup_outer_wrap .popup .evr-close_wrap {
-      position: absolute;
-      right: 0;
-      top: 0;
-      opacity: 0.2;
-      z-index: 100;
-      text-align: right;
-      transition: opacity 0.6s 0.3s; }
-    .popup_outer_wrap .popup .evr-close {
-      display: block;
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      text-align: center;
-      font-family: "Courier New", monospace;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #333;
-      background: #fff2;
-      opacity: 0.7;
-      box-shadow: 0 0 3px 1px #00000008;
-      transition: all 0.3s; }
-      .popup_outer_wrap .popup .evr-close:hover, .popup_outer_wrap .popup .evr-close:focus, .popup_outer_wrap .popup .evr-close:active {
-        color: #000;
-        background: #FFF;
-        opacity: 1;
-        box-shadow: 0 0 4px 0 #0002, 0 0 3px 1px #0001;
-        -webkit-transform: scale(1.1);
-                transform: scale(1.1); }
-    .popup_outer_wrap .popup.dark .evr-close {
-      color: #EEE;
-      background: #0002;
-      box-shadow: 0 0 0 1px #FFFFFF08;
-      text-shadow: 0px 0px 1px #000,0px 0px 3px #000A; }
-      .popup_outer_wrap .popup.dark .evr-close:hover, .popup_outer_wrap .popup.dark .evr-close:focus, .popup_outer_wrap .popup.dark .evr-close:active {
-        color: #FFF;
-        background: #2b2b2b;
-        box-shadow: 0 0 1px 1px #FFF3; }
-    .popup_outer_wrap .popup.is-open .evr-close_wrap {
-      opacity: 1;
-      transition: opacity 0.6s 0.3s; }
     .popup_outer_wrap .popup .et_pb_row:after,
     .popup_outer_wrap .popup .et_pb_row_inner:after,
     .popup_outer_wrap .popup .et_pb_slides:after,
@@ -115,12 +70,90 @@
   transition: all 0s; }
 
 body.evr_popup_open {
-  overflow: hidden !important; }
+  overflow: hidden; }
   body.evr_popup_open #page-container #main-content {
     transition: all 0.5s 1s;
     -webkit-filter: blur(2px);
             filter: blur(2px);
     opacity: 0.75; }
+
+.divi-area-wrap {
+  position: relative; }
+
+/* Styles that are shared between Popups for Divi and Divi Areas Pro */
+.divi-area-wrap.with-close .evr-close_wrap,
+.popup_outer_wrap .popup.with-close .evr-close_wrap {
+  display: block !important; }
+
+.divi-area-wrap.no-close .evr-close_wrap,
+.popup_outer_wrap .popup.no-close .evr-close_wrap {
+  display: none !important; }
+
+.divi-area-wrap .evr-close_wrap,
+.popup_outer_wrap .popup .evr-close_wrap {
+  position: absolute;
+  right: 0;
+  top: 0;
+  opacity: 0.2;
+  z-index: 100;
+  text-align: right;
+  transition: opacity 0.6s 0.3s; }
+
+.divi-area-wrap .evr-close,
+.popup_outer_wrap .popup .evr-close {
+  display: block;
+  box-sizing: content-box;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  background: #fff2;
+  opacity: 0.7;
+  box-shadow: 0 0 3px 1px #00000008;
+  transition: all 0.3s; }
+  .divi-area-wrap .evr-close:hover, .divi-area-wrap .evr-close:focus, .divi-area-wrap .evr-close:active,
+  .popup_outer_wrap .popup .evr-close:hover,
+  .popup_outer_wrap .popup .evr-close:focus,
+  .popup_outer_wrap .popup .evr-close:active {
+    color: #000;
+    background: #FFF;
+    opacity: 1;
+    box-shadow: 0 0 4px 0 #0002, 0 0 3px 1px #0001;
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1); }
+
+.divi-area-wrap.dark .evr-close,
+.popup_outer_wrap .popup.dark .evr-close {
+  color: #EEE;
+  background: #0002;
+  box-shadow: 0 0 0 1px #FFFFFF08;
+  text-shadow: 0px 0px 1px #000,0px 0px 3px #000A; }
+  .divi-area-wrap.dark .evr-close:hover, .divi-area-wrap.dark .evr-close:focus, .divi-area-wrap.dark .evr-close:active,
+  .popup_outer_wrap .popup.dark .evr-close:hover,
+  .popup_outer_wrap .popup.dark .evr-close:focus,
+  .popup_outer_wrap .popup.dark .evr-close:active {
+    color: #FFF;
+    background: #2b2b2b;
+    box-shadow: 0 0 1px 1px #FFF3; }
+
+.divi-area-wrap.is-open .evr-close_wrap,
+.popup_outer_wrap .popup.is-open .evr-close_wrap {
+  opacity: 1;
+  transition: opacity 0.6s 0.3s; }
+
+.divi-area-wrap.close-alt .evr-close,
+.popup_outer_wrap .popup.close-alt .evr-close {
+  box-shadow: none !important;
+  background: transparent !important; }
+
+.divi-area-wrap .et_pb_contact_select,
+.popup_outer_wrap .popup .et_pb_contact_select {
+  -moz-appearance: textfield; }
 
 
 /*# sourceMappingURL=front.css.map*/
