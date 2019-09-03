@@ -42,6 +42,9 @@ function ch_enqueue_scripts() {
 	// Bookings Custom Js
 	wp_register_script('custom_js', get_stylesheet_directory_uri() . '/custom.js', array('jquery'), true);
 	wp_enqueue_script('custom_js');
+	
+	wp_localize_script('custom_js', 'custom_ajax', array('ajaxurl' =>admin_url('admin-ajax.php')));
+
 }
 add_action( 'wp_enqueue_scripts', 'ch_enqueue_scripts' );
 
@@ -230,12 +233,23 @@ function ch_save_booking_data($order_id ){
 // ------------------
 // 4. Get bookings data from DB to show on my-account booking page
 
-function ch_get_bookings_data(){
+function ch_get_bookings_data($tbl_name){
 	global $wpdb;
-	$table_name = $wpdb->prefix . "bookings";
+	$table_name = $wpdb->prefix . "$tbl_name";
 	$bookings = $wpdb->get_results( "SELECT * FROM $table_name" );
 	return $bookings;
 }
+
+// ------------------
+// 4. Get single meta from DB
+
+function ch_single_col_data($tbl_name, $field_name, $host_id){
+	global $wpdb;
+	$table_name = $wpdb->prefix . "$tbl_name";
+	$field_data = $wpdb->get_results( "SELECT $field_name FROM $table_name WHERE host_id = $host_id" );
+	return $field_data;
+}
+
 // ------------------
 // 1. Register new endpoint to use for My Account page
 // Note: Resave Permalinks or it will give 404 error
@@ -277,7 +291,7 @@ function ch_booking_details_content() {
 	
 		$current_user = get_current_user_id();
 	if (function_exists('ch_get_bookings_data')) { 
-		$bookings_data = ch_get_bookings_data();
+		$bookings_data = ch_get_bookings_data('bookings');
 	?>
 	<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
 		<thead>
@@ -323,36 +337,7 @@ function ch_booking_details_content() {
 			
 		}
 		?>
-		<?php
-		 // ------------------
-		 // Invitations
 		
-		 if(isset($_POST['submitted'])) {
-				$participant_id = $_POST['participant_id'];
-				$participant_name = $_POST['participant_name'];
-				$participant_email = $_POST['participant_email'];
-				var_dump($participant_name);
-				exit();
-			 // Insert data into Database Table
-				global $wpdb;
-				$table_name = $wpdb->prefix . "invitations";
-				$success = $wpdb->insert( 
-					$table_name, 
-					array( 
-						'host_id' => $user_id, 
-						'participant_id' => $participant_id, 
-						'participant_name' => $participant_name, 
-						'participant_email' => $participant_email, 
-					) 
-				);
-				if($success) {
-				 echo ' Inserted successfully';
-				} 
-				else {
-				   echo 'not';
-				}
-		 }
-		?>
 		  <div class="modal">
 			<div class="modal-overlay modal-toggle"></div>
 			<div class="modal-wrapper modal-transition">
@@ -373,8 +358,10 @@ function ch_booking_details_content() {
 						  </div>
 						</div>
 						<input type="hidden" name="host_id" value="<?php echo $current_user; ?>" id="host_id" />
-						<input type="submit" value="Send Invitation" name="submitted" />
+						<input type="hidden" name="event_id" value="<?php echo $event_id; ?>" id="event_id" />
+						<input type="submit" value="Send Invitation" name="submitted" id="invite_btn" />
 				  </form>
+				  <div class="response_div"></div>
 				</div>
 			  </div>
 			</div>
@@ -411,4 +398,76 @@ function woo_custom_add_to_cart( $cart_item_data ) {
 
     // Do nothing with the data and return
     return $cart_item_data;
+}
+
+add_action("wp_ajax_save_invites_data", "save_invites_data");
+add_action("wp_ajax_nopriv_save_invites_data", "save_invites_data");
+function save_invites_data(){
+	global $wpdb;
+	global $current_user;
+    wp_get_current_user();
+    $host_email =  $current_user->user_email;
+	$event_id = $_POST['event_id'];
+	$host_id = $_POST['host_id'];
+	$par_id = '';
+	$par_name = $_POST['par_name'];
+	$par_email = $_POST['par_email'];
+	$user_data = array_combine($par_name, $par_email);
+	
+	$booking_table = $wpdb->prefix . "bookings";
+	$par_url = $wpdb->get_results( "SELECT participant_url FROM $booking_table WHERE event_id = $event_id" );
+	$participant_url = $par_url[0]->participant_url;
+	
+	foreach($user_data as $name => $email){	
+		$par_id  = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+		
+		$message = $participant_url.'&userId='.$par_id.'&nickName='.$par_id;
+		
+		 //Insert data into Database Table
+		
+		$table_name = $wpdb->prefix . "invitations";
+		$success = $wpdb->insert( 
+			$table_name, 
+			array( 
+				'host_id' => $host_id, 
+				'participant_id' => $par_id, 
+				'participant_name' => $name, 
+				'participant_email' => $email, 
+			) 
+		);
+		if($success) {
+		  //php mailer variables
+		  $to = $email;
+		  $subject = "Meeting Invitation";
+		  $headers = 'From: '. $host_email . "\r\n" .
+			'Reply-To: ' . $host_email . "\r\n";
+		 
+			//Here put your Validation and send mail
+			$sent = wp_mail($to, $subject, $message, $headers);
+			  if($sent) {
+				echo "Invitations Sent.";
+			  }//message sent!
+			  else  {
+
+			  }//message w
+		} 
+		else {
+			echo 'not';
+		}
+		
+	}
+	
+		
+	
+	wp_die();
+}
+function ch_add_admin_page(){
+	// Generate Valley Admin Page
+	add_menu_page('Hours per day', 'Hours per day', 'manage_options', 'hours_per_day', 'ch_hours_per_day', '', 110 );
+	
+}
+add_action('admin_menu', 'ch_add_admin_page');
+
+function ch_hours_per_day(){
+	echo '<h1>Hours per day</h1>';
 }

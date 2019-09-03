@@ -181,11 +181,16 @@ jQuery(document).ready(function( $ ) {
 	  e.preventDefault();
 	  jQuery('.modal').toggleClass('is-visible');
 	});	
+	
 	// Add more fields
 	 var max_fields = 25;
+	 
      var add_input_button = jQuery('.add_input_button');
+	 
      var field_wrapper = jQuery('.invite_wrap_inner');
+	 
      var new_field_html = '<div><input type="text" name="participant_name[]" id="" required /><input type="email" name="participant_email[]" id="" required /><input type="hidden" name="participant_id[]" value="" /><a href="javascript:void(0);" class="remove_input_button" title="Remove field"><i class="fa fa-times" aria-hidden="true"></i>Remove</a></div>';
+	 
      var input_count = 1;
      // Add button dynamically
      jQuery(add_input_button).click(function(){
@@ -195,6 +200,7 @@ jQuery(document).ready(function( $ ) {
         jQuery(field_wrapper).append(new_field_html);
        }
      });
+	
 	// Remove dynamically added button
 	jQuery(field_wrapper).on('click', '.remove_input_button', function(e){
 		e.preventDefault();
@@ -202,6 +208,33 @@ jQuery(document).ready(function( $ ) {
 		input_count--;
 	});
 
+	// Invite Ajax
+	jQuery('input[name="submitted"]').click( function(e) {
+	e.preventDefault(); 	
+		
+      //var ajax_url = "<?= admin_url('admin-ajax.php'); ?>";
+	  	  //alert(ajax_url);
+	  var host_id = jQuery('input[name*="host_id"]').val();
+	  var event_id = jQuery('input[name*="event_id"]').val();
+      var par_name = jQuery('input[name*="participant_name[]"]').map(function(){return jQuery(this).val();}).get();
+      var par_email = jQuery('input[name*="participant_email[]"]').map(function(){return jQuery(this).val();}).get();
+      var par_id = jQuery('input[name*="participant_id[]"]').map(function(){return jQuery(this).val();}).get();
+
+      jQuery.ajax({
+         type : "post",
+         url : custom_ajax.ajaxurl,
+         data : {action: "save_invites_data",  host_id: host_id, event_id: event_id, par_name : par_name, par_email: par_email, par_id: par_id },
+		 beforeSend: function() {
+			jQuery('.response_div').html("Processing....");
+		  },
+         success: function(response) {
+               jQuery('.response_div').html(response);    
+         }
+      });  
+
+   });
+  
+  
   
  }); 
 
