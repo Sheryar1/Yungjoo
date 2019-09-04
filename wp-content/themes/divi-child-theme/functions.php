@@ -256,6 +256,7 @@ function ch_single_col_data($tbl_name, $field_name, $host_id){
   
 function ch_add_premium_support_endpoint() {
     add_rewrite_endpoint( 'booking-details', EP_ROOT | EP_PAGES );
+	add_rewrite_endpoint( 'invitation_details', EP_ROOT | EP_PAGES );
 }
   
 add_action( 'init', 'ch_add_premium_support_endpoint' );
@@ -266,6 +267,7 @@ add_action( 'init', 'ch_add_premium_support_endpoint' );
   
 function ch_premium_support_query_vars( $vars ) {
     $vars[] = 'booking-details';
+    $vars[] = 'invitation_details';
     return $vars;
 }
   
@@ -277,6 +279,7 @@ add_filter( 'query_vars', 'ch_premium_support_query_vars', 0 );
   
 function ch_add_premium_support_link_my_account( $items ) {
     $items['booking-details'] = 'Bookings';
+    $items['invitation_details'] = 'Invitations';
     return $items;
 }
   
@@ -374,6 +377,48 @@ function ch_booking_details_content() {
   
 add_action( 'woocommerce_account_booking-details_endpoint', 'ch_booking_details_content' );
 
+function ch_invitation_details_content() {
+	echo '<h3>Invitations</h3>';
+	$current_user = get_current_user_id();
+	if (function_exists('ch_get_bookings_data')) { 
+		$invitation_data = ch_get_bookings_data('invitations');
+	?>
+	<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+		foreach($invitation_data as $invitation_id => $invitation_value){
+			//echo'<pre>';var_dump($invitation_value);echo'</pre>';
+			$user_id = $invitation_value->host_id;
+			$part_name = $invitation_value->participant_name;
+			$part_email = $invitation_value->participant_email;
+			
+			
+			if($current_user == $user_id){
+				//var_dump($host_url);
+				?>
+				<tr>
+					<td><?php echo $part_name; ?></td>
+					<td><?php echo $part_email; ?></td>
+					
+				</tr>
+				<?php
+			}
+			
+		}
+		?>
+		</tbody>
+		</table>
+		<?php
+	}
+}
+add_action( 'woocommerce_account_invitation_details_endpoint', 'ch_invitation_details_content' );
 // ------------------
 // 4. Reorder My Acccount Tabs
 
@@ -381,6 +426,7 @@ function ch_my_account_order() {
 	$myorder = array(
 		'dashboard'          => __( 'Dashboard', 'woocommerce' ),
 		'booking-details' => __( 'Bookings', 'woocommerce' ),
+		'invitation_details' => __( 'Invitations', 'woocommerce' ),
 		'edit-account'       => __( 'Account Details', 'woocommerce' ),
 		'customer-logout'    => __( 'Logout', 'woocommerce' ),
 	);
