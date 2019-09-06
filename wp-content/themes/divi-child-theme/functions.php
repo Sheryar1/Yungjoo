@@ -55,23 +55,30 @@ add_action( 'wp_enqueue_scripts', 'ch_enqueue_scripts' );
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	$charset_collate = $wpdb->get_charset_collate();
     $table_name = $wpdb->prefix . "bookings";  //get the database table prefix to create my new table
-if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name) 
-    {
-    $sql = "CREATE TABLE $table_name (
-	
-      id int(10) unsigned NOT NULL AUTO_INCREMENT,
-	  event_id varchar(100) NOT NULL,
-	  host_id varchar(100) NOT NULL,
-      host_url varchar(255) NOT NULL,
-      participant_url varchar(255) NOT NULL,
-      start_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-      end_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+	if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name) 
+		{
+		$sql = "CREATE TABLE $table_name (
+		
+		  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  event_id varchar(100) NOT NULL,
+		  host_id varchar(100) NOT NULL,
+		  host_url varchar(255) NOT NULL,
+		  participant_url varchar(255) NOT NULL,
+		  start_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		  end_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		  hours varchar(500) NOT NULL,
 
-      UNIQUE KEY id (id)
-      
-    ) $charset_collate;";
-    dbDelta( $sql );
- }
+		  UNIQUE KEY id (id)
+		  
+		) $charset_collate;";
+		dbDelta( $sql );
+
+	 }
+	 $myCustomer = $wpdb->get_row("SELECT * FROM wp_bookings");
+		//Add column if not present.
+		if(!isset($myCustomer->hours)){
+			$wpdb->query("ALTER TABLE wp_bookings ADD hours varchar(500) NOT NULL");
+		}
 
 // ------------------
 // Create Database Table for bookings
@@ -92,6 +99,26 @@ if($wpdb->get_var( "show tables like '$table_name'" ) != $table_name)
 				) $charset_collate;";
 				dbDelta( $sql );
 			 }
+			 
+// ------------------
+// Create Database Table for Hourly Limit			 
+			 
+	$hours_table = $wpdb->prefix . "hourslimit";  //get the database table prefix to create my new table
+	if($wpdb->get_var( "show tables like '$hours_table'" ) != $hours_table) 
+		{
+		$sql = "CREATE TABLE $hours_table (
+		
+		  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  date varchar(255) NOT NULL,
+		  total_hours varchar(255) NOT NULL,
+		  purchased_hours varchar(255) NOT NULL,
+		  remaining_hours varchar(255) NOT NULL,
+		  
+		  UNIQUE KEY id (id)
+		  
+		) $charset_collate;";
+		dbDelta( $sql );
+	 }	 
 
 // ------------------
 // Add custom note as custom cart item data
@@ -146,16 +173,24 @@ function ch_save_booking_data($order_id ){
 	$items = $order->get_items();
 	$meeting_start = '';
 	$meeting_end = '';
+	$total_days = '';
 	
 	// Get the user ID
     $user_id = get_post_meta($order_id, '_customer_user', true);
 	
+	
+	
 	foreach($items as $item_id => $item){
+		//var_dump($item);
 			$meeting_start = wc_get_order_item_meta( $item_id, 'start_time', true );
 			$meeting_end = wc_get_order_item_meta( $item_id, 'end_time', true );
+			$total_days = wc_get_order_item_meta($item_id, '_qty', true);
 	}
+	
 	$start_timestamp = strtotime($meeting_start);
 	$end_timestamp = strtotime($meeting_end);
+	
+	
 	
 	// Api req
 	 $data = array(
@@ -196,7 +231,7 @@ function ch_save_booking_data($order_id ){
 	 	curl_close($curl);
 
 	 	if ($err) {
-	 	echo "cURL Error #:" . $err;
+			echo "cURL Error #:" . $err;
 	 	}
 	 	$response = json_decode($response, true);
 		$meeting_host_url = '';
@@ -223,10 +258,83 @@ function ch_save_booking_data($order_id ){
 			) 
 		);
 		if($success) {
-		 //echo ' Inserted successfully';
+			//echo ' Inserted successfully';
 		} 
 		else {
 		   //echo 'not';
+		}
+		//var_dump($meeting_start);
+		//var_dump($meeting_end);
+		//var_dump($total_days);
+		?>
+		<script>
+			var total_hours = Math.abs('<?php echo $meeting_start; ?> - <?php echo $meeting_end; ?>');
+			console.log(total_hours);
+			var tomorrow = new Date(new Date('<?php echo $meeting_start; ?>').getTime() + 24 * 60 * 60 * 1000);
+			var month = ('0' + (tomorrow.getMonth()+1)).slice(-2);
+					var year = tomorrow.getFullYear();
+					var day = ('0'+tomorrow.getDate()).slice(-2);
+			var newdate = year+'/'+month+'/'+day;
+			var countDownDate = new Date(newdate).getTime();
+			var now = new Date("2019/09/05 22:00").getTime();
+			var distance = countDownDate - now;
+			  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+console.log(hours);
+			console.log(tomorrow.getHours());
+		</script>
+		<?php 
+		$dt = new DateTime($meeting_start);
+		$meeting_date = $dt->format('m/d/Y');
+		//echo $meeting_date;
+		//Convert to date
+		$datestr=$meeting_start;//Your date
+		$date=strtotime($datestr);//Converted to a PHP date (a second count)
+		
+		//Calculate difference
+		$diff=$date-time();//time returns current time in seconds
+		$days=floor($diff/(60*60*24));//seconds/minute*minutes/hour*hours/day)
+		$hours=round(($diff-$days*60*60*24)/(60*60));
+
+		//Report
+		//echo "$days days $hours hours remain<br />";
+		//echo '<br>';
+		$seconds = strtotime("2019/09/05 22:00") - time();
+
+		$days = floor($seconds / 86400);
+		$seconds %= 86400;
+
+		$hours = floor($seconds / 3600);
+		$seconds %= 3600;
+
+		$minutes = floor($seconds / 60);
+		$seconds %= 60;
+
+
+		//echo "$days days and $hours hours and $minutes minutes and $seconds seconds";
+		//echo '<br>';
+		
+		$datetime = new DateTime($meeting_start);
+		$datetime->modify('+1 day');
+		$tomorow_date = $datetime->format('Y/m/d H:i');
+		//echo $tomorow_date;
+		
+		echo '<br>';
+		
+		$date = strtotime($tomorow_date);
+		$remaining = $date - time();
+		$days_remaining = floor($remaining / 86400);
+		$hours_remaining = floor(($remaining % 86400) / 3600);
+		//echo "There are $days_remaining days and $hours_remaining hours left";
+		
+		echo '<br>';
+		$today      = new DateTime();
+		$tomorrow   = new DateTime($meeting_start);
+		$difference = $today->diff($tomorrow);
+
+		$url = 'http://yungjoo.thechakor.com/my-account';
+		if ( ! $order->has_status( 'failed' ) ) {
+			wp_safe_redirect( $url );
+			exit;
 		}
 }
 
@@ -383,7 +491,7 @@ function ch_invitation_details_content() {
 	if (function_exists('ch_get_bookings_data')) { 
 		$invitation_data = ch_get_bookings_data('invitations');
 	?>
-	<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+	<table id="invitations" class="table table-striped table-bordered" cellspacing="0" width="100%">
 		<thead>
 			<tr>
 				<th>Name</th>

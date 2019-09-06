@@ -115,6 +115,7 @@ jQuery(document).ready(function( $ ) {
 	});
 	
 	jQuery('#daily_pkg #daily_package_btn').click(function() {
+	
 		var d_start_date = jQuery( '#daily_datetimepicker_start' ).val();
 		var d_end_date = jQuery( '#daily_datetimepicker_end' ).val();
 		var days_num = jQuery('#no_of_days').val();
@@ -175,6 +176,7 @@ jQuery(document).ready(function( $ ) {
 	
 	// DataTable
 		jQuery('#example').DataTable();
+		jQuery('#invitations').DataTable();
 		
 	// Invite Popup
 	jQuery('.modal-toggle').on('click', function(e) {
