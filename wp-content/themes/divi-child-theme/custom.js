@@ -92,6 +92,17 @@ jQuery(document).ready(function( $ ) {
 		minDate: 0,
 		minDateTime: minDateTime,
 		todayButton: true,
+		 onSelectDate:function(ct){
+          //alert(ct);
+		  jQuery.ajax({
+			 type : "post",
+			 url : custom_ajax.ajaxurl,
+			 data : {action: "disable_dates",  date: ct },
+			 success: function(response) {
+				alert(response);    
+			 }
+		  });
+        }
     });
 	
 	jQuery("#daily_datetimepicker_start").change(function(){

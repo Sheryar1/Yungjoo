@@ -25,7 +25,7 @@ function ch_enqueue_scripts() {
 	wp_enqueue_style('datepicker_css');
 
 	
-	wp_register_script('datepicker_js', get_stylesheet_directory_uri() . '/datetimepicker/jquery.datetimepicker.full.min.js', array('jquery'), true);
+	wp_register_script('datepicker_js', get_stylesheet_directory_uri() . '/datetimepicker/jquery.datetimepicker.full.js', array('jquery'), true);
 	wp_enqueue_script('datepicker_js');
 	
 	// DataTables
@@ -178,20 +178,86 @@ function ch_save_booking_data($order_id ){
 	// Get the user ID
     $user_id = get_post_meta($order_id, '_customer_user', true);
 	
+		foreach($items as $item_id => $item){
+			//var_dump($item);
+				$meeting_start = wc_get_order_item_meta( $item_id, 'start_time', true );
+				$meeting_end = wc_get_order_item_meta( $item_id, 'end_time', true );
+				$total_days = wc_get_order_item_meta($item_id, '_qty', true);
+		}
 	
+		$start_timestamp = strtotime($meeting_start);
+		$end_timestamp = strtotime($meeting_end);
+		
+		// get start date
+		$start_date_only = new DateTime($meeting_end);
+		$start_date_only = $start_date_only->format('Y-m-d');
+		
+		// get end date
+		$end_date_only = new DateTime($meeting_end);
+		$end_date_only = $end_date_only->format('Y-m-d');
+		
+		// get total num of hours between 2 dates
+		$date1 = new DateTime($meeting_start);
+		$date2 = new DateTime($meeting_end);
+		$diff = $date2->diff($date1);
+		$hours = $diff->h;
+		$hours = $hours + ($diff->days*24);
+		
+		// get next day date
+		$tomorrow_date = new DateTime($meeting_start);
+		$tomorrow_date->add(new DateInterval("P1D"));
+		$tomorrow =  $tomorrow_date->format('Y/m/d');
+		
+		// get num of remaining hours in start date
+		$datetime1 = new DateTime($meeting_start);
+		$datetime2 = new DateTime($tomorrow);
+		$interval = $datetime1->diff($datetime2);
+		$start_hours = $interval->format('%h');
+		
+		$dt_end = new DateTime($tomorrow.' 00:00');
+		$remain = $dt_end->diff(new DateTime($meeting_start));
+		//echo $remain->h . ' hours';
+		//echo '<br>';
+		
+		// get num of hour in end date
+		$end_hours = 24 - $start_hours;
+		
+		//get all dates between 2 dates
+		$period = new DatePeriod(
+			 new DateTime($meeting_start),
+			 new DateInterval('P1D'),
+			 new DateTime($meeting_end)
+		);
+		
+		// get all dates/hours and add into array in dates => hours pairs
+		$dates_array = array();
+		$counter = '0';
+		
+		//$len = count($period);
+		//echo '<pre>';var_dump($period);echo '</pre>';
+		
+		foreach ($period as $key => $value) {
+			
+			//echo '<pre>';var_dump($value);echo '</pre>'; 
+			if($counter == 0){
+				$dates_array[$value->format('Y-m-d')] = $start_hours;
+			}
+			else{
+				$dates_array[$value->format('Y-m-d')] = 24; 	
+			}
+			if ($value == end($period) ) {
+				$dates_array[$end_date_only] = $end_hours;
+			}
+			
+			
+			$counter ++;			
+		}
+		//$end_date_array = array($end_date_only => $end_hours);
+		//array_push($dates_array, $end_date_array);
+		//var_dump($dates_array); 
+		
 	
-	foreach($items as $item_id => $item){
-		//var_dump($item);
-			$meeting_start = wc_get_order_item_meta( $item_id, 'start_time', true );
-			$meeting_end = wc_get_order_item_meta( $item_id, 'end_time', true );
-			$total_days = wc_get_order_item_meta($item_id, '_qty', true);
-	}
-	
-	$start_timestamp = strtotime($meeting_start);
-	$end_timestamp = strtotime($meeting_end);
-	
-	
-	
+	//exit();
 	// Api req
 	 $data = array(
 	     'event_id' => ''.$event_id.'',
@@ -244,6 +310,8 @@ function ch_save_booking_data($order_id ){
 			}
 		}
 		// Insert data into Database Table
+		$final_array = json_encode($dates_array);
+		//var_dump($final_array); 
 		global $wpdb;
 		$table_name = $wpdb->prefix . "bookings";
 		$success = $wpdb->insert( 
@@ -255,6 +323,7 @@ function ch_save_booking_data($order_id ){
 				'participant_url' => $meeting_url_participant, 
 				'start_time' => $meeting_start, 
 				'end_time' => $meeting_end, 
+				'hours' => $final_array, 
 			) 
 		);
 		if($success) {
@@ -263,79 +332,9 @@ function ch_save_booking_data($order_id ){
 		else {
 		   //echo 'not';
 		}
-		//var_dump($meeting_start);
-		//var_dump($meeting_end);
-		//var_dump($total_days);
-		?>
-		<script>
-			var total_hours = Math.abs('<?php echo $meeting_start; ?> - <?php echo $meeting_end; ?>');
-			console.log(total_hours);
-			var tomorrow = new Date(new Date('<?php echo $meeting_start; ?>').getTime() + 24 * 60 * 60 * 1000);
-			var month = ('0' + (tomorrow.getMonth()+1)).slice(-2);
-					var year = tomorrow.getFullYear();
-					var day = ('0'+tomorrow.getDate()).slice(-2);
-			var newdate = year+'/'+month+'/'+day;
-			var countDownDate = new Date(newdate).getTime();
-			var now = new Date("2019/09/05 22:00").getTime();
-			var distance = countDownDate - now;
-			  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-console.log(hours);
-			console.log(tomorrow.getHours());
-		</script>
-		<?php 
-		$dt = new DateTime($meeting_start);
-		$meeting_date = $dt->format('m/d/Y');
-		//echo $meeting_date;
-		//Convert to date
-		$datestr=$meeting_start;//Your date
-		$date=strtotime($datestr);//Converted to a PHP date (a second count)
 		
-		//Calculate difference
-		$diff=$date-time();//time returns current time in seconds
-		$days=floor($diff/(60*60*24));//seconds/minute*minutes/hour*hours/day)
-		$hours=round(($diff-$days*60*60*24)/(60*60));
-
-		//Report
-		//echo "$days days $hours hours remain<br />";
-		//echo '<br>';
-		$seconds = strtotime("2019/09/05 22:00") - time();
-
-		$days = floor($seconds / 86400);
-		$seconds %= 86400;
-
-		$hours = floor($seconds / 3600);
-		$seconds %= 3600;
-
-		$minutes = floor($seconds / 60);
-		$seconds %= 60;
-
-
-		//echo "$days days and $hours hours and $minutes minutes and $seconds seconds";
-		//echo '<br>';
-		
-		$datetime = new DateTime($meeting_start);
-		$datetime->modify('+1 day');
-		$tomorow_date = $datetime->format('Y/m/d H:i');
-		//echo $tomorow_date;
-		
-		echo '<br>';
-		
-		$date = strtotime($tomorow_date);
-		$remaining = $date - time();
-		$days_remaining = floor($remaining / 86400);
-		$hours_remaining = floor(($remaining % 86400) / 3600);
-		//echo "There are $days_remaining days and $hours_remaining hours left";
-		
-		echo '<br>';
-		$today      = new DateTime();
-		$tomorrow   = new DateTime($meeting_start);
-		$difference = $today->diff($tomorrow);
-
-		$url = 'http://yungjoo.thechakor.com/my-account';
-		if ( ! $order->has_status( 'failed' ) ) {
-			wp_safe_redirect( $url );
-			exit;
-		}
+			
+	
 }
 
 // ------------------
@@ -487,6 +486,7 @@ add_action( 'woocommerce_account_booking-details_endpoint', 'ch_booking_details_
 
 function ch_invitation_details_content() {
 	echo '<h3>Invitations</h3>';
+	
 	$current_user = get_current_user_id();
 	if (function_exists('ch_get_bookings_data')) { 
 		$invitation_data = ch_get_bookings_data('invitations');
@@ -622,6 +622,113 @@ function ch_add_admin_page(){
 }
 add_action('admin_menu', 'ch_add_admin_page');
 
+function get_daily_hours(){
+	global $wpdb;
+	$table_name = $wpdb->prefix . "bookings";
+	$daily_hours = $wpdb->get_results( "SELECT hours FROM $table_name" );
+		
+		$final_arr = array();
+		$hours_array = '';
+		
+		foreach($daily_hours as $key => $value){
+				$daily_hours = $value->hours;
+				
+				if(!empty($daily_hours )){
+					
+					$hours_array = json_decode($daily_hours, true);
+					
+					ksort($hours_array);
+					
+					$count = '';
+					
+					foreach($hours_array as $date_key => $hour_value){
+						
+						if(array_key_exists($date_key, $final_arr)){
+							$final_arr[$date_key] += $hour_value;
+						}else{
+							$final_arr[$date_key] = $hour_value;
+						}
+					
+					}
+					
+				}
+			}
+		return $final_arr;
+}
+
 function ch_hours_per_day(){
+	
 	echo '<h1>Hours per day</h1>';
+	?>
+	<form action="" method="get">
+		<input type="text" id="hours_limit" name="hours_limit" value="72">
+		<input type="submit" value="Save">
+	</form>
+	<?php
+			$final_arr = get_daily_hours();
+		?>
+			<table id="invitations" class="table table-striped table-bordered" cellspacing="0" width="60%" border="1">
+				<thead>
+					<tr>
+						<th style="text-align:left;">Date</th>
+						<th style="text-align:left;">Hours</th>
+						
+					</tr>
+				</thead>
+			<tbody>
+		<?php
+		foreach($final_arr as $date_k => $hour_v){
+		?>
+			<tr>
+				<td><?php echo $date_k; ?></td>
+				<td><?php echo $hour_v; ?></td>
+				
+			</tr>
+		<?php
+		}
+		?>
+			</tbody>
+			</table>
+		<?php
+			
+}
+//function get_dates_to_restrict(){
+	
+//}
+	
+add_action('wp_footer', 'add_this_script_footer'); 
+function add_this_script_footer(){ 
+	$disable_dates = array();
+		$all_dates = get_daily_hours();
+		foreach($all_dates as $key => $value){
+			if($value >= '72'){
+				$origDate = $key;
+ 
+				$newDate = date("d.m.Y", strtotime($origDate));
+				
+				$disable_dates[] = $newDate;
+			}
+		}
+	//echo "<pre>";var_dump($disable_dates);echo "</pre>";
+	$disable_dates = json_encode($disable_dates);
+	
+?>
+	
+	<script type="text/javascript">
+	jQuery(document).ready(function( $ ) {
+		var disabledDates = '<?php echo $disable_dates ; ?>';
+		//alert(disabledDates);
+		jQuery('#free_date_timepicker_start, #hourly_datetimepicker_start, #hourly_datetimepicker_end, #daily_datetimepicker_start, #monthly_datetimepicker_start').datetimepicker({
+			disabledDates: disabledDates, formatDate:'d.m.Y',
+		});
+	});	
+	</script>
+<?php }
+	
+
+add_action("wp_ajax_disable_dates", "disable_dates");
+add_action("wp_ajax_nopriv_disable_dates", "disable_dates");
+function disable_dates(){
+	$sel_date = $_POST['date'];
+	echo $sel_date;
 }
