@@ -92,23 +92,38 @@ jQuery(document).ready(function( $ ) {
 		minDate: 0,
 		minDateTime: minDateTime,
 		todayButton: true,
-		 onSelectDate:function(ct){
-          //alert(ct);
-		  jQuery.ajax({
-			 type : "post",
-			 url : custom_ajax.ajaxurl,
-			 data : {action: "disable_dates",  date: ct },
-			 success: function(response) {
-				alert(response);    
-			 }
-		  });
-        }
+		onSelectTime:function(ct,$i){
+		  var daily_start_datee =  jQuery('#daily_datetimepicker_start').val();
+		  var daily_end_datee =  jQuery('#daily_datetimepicker_end').val();
+		  if(daily_end_datee != ""){
+			
+			jQuery.ajax({
+				 type : "post",
+				 url : custom_ajax.ajaxurl,
+				 data : {action: "disable_dates",  start_date: daily_start_datee, end_date: daily_end_datee },
+				 success: function(response) {
+					//if(response == 'false'){
+						//alert(response);
+						//alert("This date is not available please select any other date");
+						//jQuery('#daily_datetimepicker_start').val(" ");
+						//jQuery('#daily_datetimepicker_end').val(" ");					
+					//} 
+								
+				 }
+			});
+		  }
+		  e.preventDefault
+		}	
     });
 	
-	jQuery("#daily_datetimepicker_start").change(function(){
+	jQuery("#daily_datetimepicker_start").on('change', function(){
+		//alert(jQuery('#daily_datetimepicker_start').val());
 		var num_of_days = jQuery('#no_of_days').val();
-		var daily_start_date =  jQuery('#daily_datetimepicker_start').val();
-		var daily_start_date =  new Date(daily_start_date);
+		var daily_start_datee =  jQuery('#daily_datetimepicker_start').val();
+		//alert(daily_start_datee);
+		
+		
+		var daily_start_date =  new Date(daily_start_datee);
 		
 		var month = ('0' + (daily_start_date.getMonth()+1)).slice(-2);
 		var year = daily_start_date.getFullYear();
@@ -122,7 +137,16 @@ jQuery(document).ready(function( $ ) {
 		var sec = ('0'+daily_start_date.getMilliseconds()).slice(-2);
 		
 		new_start_date = year+'/'+month+'/'+day_end+' '+hour+':'+min;
-		jQuery('#daily_datetimepicker_end').val(new_start_date);
+		if(daily_start_datee != ""){
+			var end_date = jQuery('#daily_datetimepicker_end').val(new_start_date);
+			if(end_date != ""){
+				
+					
+			}
+		}
+		
+		
+		
 	});
 	
 	jQuery('#daily_pkg #daily_package_btn').click(function() {

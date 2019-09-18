@@ -189,7 +189,7 @@ function ch_save_booking_data($order_id ){
 		$end_timestamp = strtotime($meeting_end);
 		
 		// get start date
-		$start_date_only = new DateTime($meeting_end);
+		$start_date_only = new DateTime($meeting_start);
 		$start_date_only = $start_date_only->format('Y-m-d');
 		
 		// get end date
@@ -331,10 +331,18 @@ function ch_save_booking_data($order_id ){
 		} 
 		else {
 		   //echo 'not';
-		}
-		
-			
-	
+		}		
+}
+
+add_action( 'woocommerce_thankyou', 'bbloomer_redirectcustom');
+  
+function bbloomer_redirectcustom( $order_id ){
+    $order = wc_get_order( $order_id );
+    $url = '/my-account';
+    if ( ! $order->has_status( 'failed' ) ) {
+        wp_safe_redirect( $url );
+        exit;
+    }
 }
 
 // ------------------
@@ -695,9 +703,8 @@ function ch_hours_per_day(){
 //function get_dates_to_restrict(){
 	
 //}
-	
-add_action('wp_footer', 'add_this_script_footer'); 
-function add_this_script_footer(){ 
+
+function get_all_disabled_dates(){
 	$disable_dates = array();
 		$all_dates = get_daily_hours();
 		foreach($all_dates as $key => $value){
@@ -709,9 +716,15 @@ function add_this_script_footer(){
 				$disable_dates[] = $newDate;
 			}
 		}
-	//echo "<pre>";var_dump($disable_dates);echo "</pre>";
 	$disable_dates = json_encode($disable_dates);
+	return $disable_dates;
+}
 	
+add_action('wp_footer', 'add_this_script_footer'); 
+function add_this_script_footer(){ 
+
+		$disable_dates = get_all_disabled_dates();
+		//var_dump($disable_dates);
 ?>
 	
 	<script type="text/javascript">
@@ -729,6 +742,67 @@ function add_this_script_footer(){
 add_action("wp_ajax_disable_dates", "disable_dates");
 add_action("wp_ajax_nopriv_disable_dates", "disable_dates");
 function disable_dates(){
-	$sel_date = $_POST['date'];
-	echo $sel_date;
+	$meeting_start = $_POST['start_date'];
+	$meeting_end = $_POST['end_date'];
+	
+		// get start date
+		$start_date_only = new DateTime($meeting_start);
+		$start_date_only = $start_date_only->format('Y-m-d');
+		
+		// get end date
+		$end_date_only = new DateTime($meeting_end);
+		$end_date_only = $end_date_only->format('Y-m-d');
+		
+		// get next day date
+		$tomorrow_date = new DateTime($meeting_start);
+		$tomorrow_date->add(new DateInterval("P1D"));
+		$tomorrow =  $tomorrow_date->format('Y/m/d');
+		
+		// get num of remaining hours in start date
+		$datetime1 = new DateTime($meeting_start);
+		$datetime2 = new DateTime($tomorrow);
+		$interval = $datetime1->diff($datetime2);
+		$start_hours = $interval->format('%h');
+		
+		//get all dates between 2 dates
+		$period = new DatePeriod(
+			 new DateTime($meeting_start),
+			 new DateInterval('P1D'),
+			 new DateTime($meeting_end)
+		);
+		
+		$dates_array = array();
+		$counter = '0';
+		
+		foreach ($period as $key => $value) {
+			
+			//echo '<pre>';var_dump($value);echo '</pre>'; 
+			if($counter == 0){
+				$dates_array[] = $value->format('Y-m-d');
+			}
+			else{
+				$dates_array[] = $value->format('Y-m-d'); 	
+			}
+			if ($value == end($period) ) {
+				$dates_array[] = $end_date_only;
+			}
+			
+			
+			$counter ++;			
+		}
+	var_dump($dates_array );	
+	$all_dates = get_daily_hours();
+		foreach($all_dates as $key => $value){
+			if($key == $start_date_only){
+				$sum_value = $value + $start_hours;
+				if($sum_value >= '72'){
+					//echo "false";
+				}else{
+					//echo "true";
+				}
+			}
+		}	
+
+	
+	die();
 }
