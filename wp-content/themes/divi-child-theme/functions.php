@@ -28,6 +28,8 @@ function ch_enqueue_scripts() {
 	wp_register_script('datepicker_js', get_stylesheet_directory_uri() . '/datetimepicker/jquery.datetimepicker.full.js', array('jquery'), true);
 	wp_enqueue_script('datepicker_js');
 	
+	
+	
 	// DataTables
 	wp_register_style('datatables_css', get_stylesheet_directory_uri() . '/datatables/css/dataTables.bootstrap.min.css' );
 	wp_enqueue_style('datatables_css');
@@ -44,6 +46,11 @@ function ch_enqueue_scripts() {
 	wp_enqueue_script('custom_js');
 	
 	wp_localize_script('custom_js', 'custom_ajax', array('ajaxurl' =>admin_url('admin-ajax.php')));
+	if(is_account_page() || is_page('my-account/booking-details/') || is_page('my-account/invitation_details/') ){
+		wp_register_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
+		wp_enqueue_style('bootstrap4');
+    } 
+	
 
 }
 add_action( 'wp_enqueue_scripts', 'ch_enqueue_scripts' );
@@ -784,11 +791,16 @@ function disable_dates(){
 		$disable_dates = get_all_disabled_dates();
 		$new_disable_dates = json_decode($disable_dates, true);
 		//var_dump($dates_array);
-		if($dates_array == $new_disable_dates){
-			echo'same';
-		}else{
-			echo 'NO';
+		$result = array_diff($dates_array,$new_disable_dates);
+		if(!empty($result)){
+			if($dates_array == $result){
+				echo "true";
+			}
+			else{
+				echo "false";
+			}
 		}
+		
 	$all_dates = get_daily_hours();
 		foreach($all_dates as $key => $value){
 			if($key == $start_date_only){
@@ -803,10 +815,4 @@ function disable_dates(){
 
 	
 	die();
-}
-if(is_account_page()){
-    function my_account_script(){
-        wp_enqueue_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
-    }
-add_action("wp_enqueue_scripts", "my_account_script"); 
 }

@@ -93,21 +93,22 @@ jQuery(document).ready(function( $ ) {
 		minDateTime: minDateTime,
 		todayButton: true,
 		onSelectTime:function(ct,$i){
+			console.log($i);
 		  var daily_start_datee =  jQuery('#daily_datetimepicker_start').val();
 		  var daily_end_datee =  jQuery('#daily_datetimepicker_end').val();
 		  if(daily_end_datee != ""){
 			  //alert(daily_start_datee);
-			jQuery.ajax({
+		    jQuery.ajax({
 				 type : "post",
 				 url : custom_ajax.ajaxurl,
 				 data : {action: "disable_dates",  start_date: daily_start_datee, end_date: daily_end_datee },
 				 success: function(response) {
-					//if(response == 'false'){
+					if(response == 'false'){
 						console.log(response);
-						//alert("This date is not available please select any other date");
-						//jQuery('#daily_datetimepicker_start').val(" ");
-						//jQuery('#daily_datetimepicker_end').val(" ");					
-					//} 
+						alert("This date is not available please select any other date");
+						jQuery('#daily_datetimepicker_start').val(" ");
+						jQuery('#daily_datetimepicker_end').val(" ");					
+					} 
 								
 				 }
 			});
