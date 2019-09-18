@@ -334,7 +334,7 @@ function ch_save_booking_data($order_id ){
 		}		
 }
 
-add_action( 'woocommerce_thankyou', 'bbloomer_redirectcustom');
+//add_action( 'woocommerce_thankyou', 'bbloomer_redirectcustom');
   
 function bbloomer_redirectcustom( $order_id ){
     $order = wc_get_order( $order_id );
@@ -724,7 +724,7 @@ add_action('wp_footer', 'add_this_script_footer');
 function add_this_script_footer(){ 
 
 		$disable_dates = get_all_disabled_dates();
-		//var_dump($disable_dates);
+		var_dump(json_decode($disable_dates, true));
 ?>
 	
 	<script type="text/javascript">
@@ -776,21 +776,19 @@ function disable_dates(){
 		
 		foreach ($period as $key => $value) {
 			
-			//echo '<pre>';var_dump($value);echo '</pre>'; 
-			if($counter == 0){
-				$dates_array[] = $value->format('Y-m-d');
-			}
-			else{
-				$dates_array[] = $value->format('Y-m-d'); 	
-			}
-			if ($value == end($period) ) {
-				$dates_array[] = $end_date_only;
-			}
-			
-			
+			//var_dump($value);
+			$dates_array[] = $value->format('d.m.Y')	;	
 			$counter ++;			
 		}
-	var_dump($dates_array );	
+		
+		$disable_dates = get_all_disabled_dates();
+		$new_disable_dates = json_decode($disable_dates, true);
+		//var_dump($dates_array);
+		if($dates_array == $new_disable_dates){
+			echo'same';
+		}else{
+			echo 'NO';
+		}
 	$all_dates = get_daily_hours();
 		foreach($all_dates as $key => $value){
 			if($key == $start_date_only){
@@ -805,4 +803,10 @@ function disable_dates(){
 
 	
 	die();
+}
+if(is_account_page()){
+    function my_account_script(){
+        wp_enqueue_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
+    }
+add_action("wp_enqueue_scripts", "my_account_script"); 
 }

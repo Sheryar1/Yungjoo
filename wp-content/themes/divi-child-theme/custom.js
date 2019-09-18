@@ -96,14 +96,14 @@ jQuery(document).ready(function( $ ) {
 		  var daily_start_datee =  jQuery('#daily_datetimepicker_start').val();
 		  var daily_end_datee =  jQuery('#daily_datetimepicker_end').val();
 		  if(daily_end_datee != ""){
-			
+			  //alert(daily_start_datee);
 			jQuery.ajax({
 				 type : "post",
 				 url : custom_ajax.ajaxurl,
 				 data : {action: "disable_dates",  start_date: daily_start_datee, end_date: daily_end_datee },
 				 success: function(response) {
 					//if(response == 'false'){
-						//alert(response);
+						console.log(response);
 						//alert("This date is not available please select any other date");
 						//jQuery('#daily_datetimepicker_start').val(" ");
 						//jQuery('#daily_datetimepicker_end').val(" ");					
@@ -112,7 +112,7 @@ jQuery(document).ready(function( $ ) {
 				 }
 			});
 		  }
-		  e.preventDefault
+		 // e.preventDefault();
 		}	
     });
 	
@@ -144,9 +144,6 @@ jQuery(document).ready(function( $ ) {
 					
 			}
 		}
-		
-		
-		
 	});
 	
 	jQuery('#daily_pkg #daily_package_btn').click(function() {
