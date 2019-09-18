@@ -463,7 +463,7 @@ function ch_booking_details_content() {
 		}
 		?>
 		
-		  <div class="modal">
+		  <div class="moda">
 			<div class="modal-overlay modal-toggle"></div>
 			<div class="modal-wrapper modal-transition">
 			  <div class="modal-header">

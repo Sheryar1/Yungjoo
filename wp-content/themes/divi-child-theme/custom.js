@@ -214,7 +214,7 @@ jQuery(document).ready(function( $ ) {
 	// Invite Popup
 	jQuery('.modal-toggle').on('click', function(e) {
 	  e.preventDefault();
-	  jQuery('.modal').toggleClass('is-visible');
+	  jQuery('.moda').toggleClass('is-visible');
 	});	
 	
 	// Add more fields

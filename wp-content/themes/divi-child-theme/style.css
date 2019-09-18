@@ -32,7 +32,7 @@ a.et-cart-info {
     display: none;
 }
 /* 1. Ensure this sits above everything when visible */
-.modal {
+.moda{
     position: absolute;
     z-index: 10000; /* 1 */
     top: 0;
@@ -42,10 +42,23 @@ a.et-cart-info {
     height: 100%;
 }
 
-.modal.is-visible {
-    visibility: visible;
+.moda.is-visible {
+  visibility: visible;
 }
-
+#participant_popup{
+  cursor: pointer;
+  text-decoration: none;	
+}
+#invite_btn{
+  text-align: center;
+  display: block;
+  margin: auto;
+  background: #337ab7;
+  margin-top: 14px;
+  color:#fff;
+  border: none;
+  padding: 6px 20px;
+}
 .modal-overlay {
   position: fixed;
   z-index: 10;
@@ -59,7 +72,7 @@ a.et-cart-info {
   transition: visibility 0s linear 0.3s, opacity 0.3s;
 }
 
-.modal.is-visible .modal-overlay {
+.moda.is-visible .modal-overlay {
   opacity: 1;
   visibility: visible;
   transition-delay: 0s;
@@ -79,7 +92,7 @@ a.et-cart-info {
 .modal-transition {
   transition: all 0.3s 0.12s;
   transform: translateY(-10%);
-  opacity: 0;
+  opacity: 1;
 }
 
 .modal.is-visible .modal-transition {
@@ -114,7 +127,8 @@ a.et-cart-info {
 }
 
 .modal-heading {
-  font-size: 1.125em;
+  text-align: center;
+  font-size: 2.1em;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -126,4 +140,23 @@ a.et-cart-info {
 
 .modal-content > *:last-child {
   margin-bottom: 0;
+}
+.remove_input_button{
+ margin-left: 7px;	
+}
+.modal-content input{
+	margin-left: 5px;
+    margin-top: 5px;
+}
+.add_input_button , .add_input_button:hover, .add_input_button:active, .add_input_button:focus {
+   background-color: #337ab7;
+   padding: 3px 7px;
+   color: #fff;	
+   text-decoration:none;
+}
+.remove_input_button , .remove_input_button:hover, .remove_input_button:active, .remove_input_button:focus {
+   background-color: #e14454;
+   padding: 3px 11px;
+   color: #fff;	
+   text-decoration:none;
 }
