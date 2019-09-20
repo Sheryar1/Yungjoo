@@ -462,7 +462,7 @@ function ch_booking_details_content() {
 					<td><?php echo $event_name; ?></td>
 					<td><?php echo $meeting_start; ?></td>
 					<td><?php echo $meeting_end; ?></td>
-					<td><a href="<?php echo $host_url; ?>&nickName=<?php echo $user_name; ?>" target="_blank">Join</a></td>
+					<td><a href="<?php echo $host_url; ?>&userId=<?php echo $user_id; ?>&nickName=<?php echo $user_id; ?>" target="_blank">Join</a></td>
 					<td><a id ="participant_popup" class="modal-toggle" >Invite</a></td>
 				</tr>
 				<?php
@@ -749,7 +749,19 @@ add_action('wp_footer', 'add_this_script_footer');
 function add_this_script_footer(){ 
 
 		$disable_dates = get_all_disabled_dates();
-		//var_dump(json_decode($disable_dates, true));
+		if ( !is_user_logged_in() ) {
+			wp_dequeue_script('js-divi-popup');
+			?>
+			<script type="text/javascript">
+				jQuery(document).ready(function( $ ) {
+					jQuery('a.et_pb_button.et_pb_pricing_table_button').attr('href', '/wp-admin');
+				});	
+			</script>
+			<?php
+			
+		}else{
+			wp_enqueue_script( 'js-divi-popup' );
+		}
 ?>
 	
 	<script type="text/javascript">

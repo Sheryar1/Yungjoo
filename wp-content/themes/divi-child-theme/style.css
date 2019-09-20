@@ -133,7 +133,10 @@ a.et-cart-info {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.modal-content{
+	box-shadow:none !important;
+	border:0px !important;
+}
 .modal-content > *:first-child {
   margin-top: 0;
 }
