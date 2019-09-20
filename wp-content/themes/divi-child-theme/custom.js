@@ -329,7 +329,7 @@ jQuery(document).ready(function( $ ) {
 	// Invite Popup
 	jQuery('.modal-toggle').on('click', function(e) {
 	  e.preventDefault();
-	  jQuery('.moda').toggleClass('is-visible');
+	  jQuery('.modal').toggleClass('is-visible');
 	});	
 	
 	// Add more fields
