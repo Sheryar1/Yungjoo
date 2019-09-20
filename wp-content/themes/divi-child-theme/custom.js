@@ -7,7 +7,45 @@ jQuery(document).ready(function( $ ) {
 	jQuery('#free_date_timepicker_start').datetimepicker({
 		minDate: 0,
 		minDateTime: minDateTime,
-		todayButton: true,
+		defaultSelect: false,
+		todayButton: false,
+		//timepicker: false,
+		
+		onSelectTime:function(ct,$i){
+			console.log($i);
+			  var daily_start_datee =  jQuery('#free_date_timepicker_start').val();
+			  var daily_end_datee =  jQuery('#free_date_timepicker_end').val();
+			  if(daily_end_datee != ""){
+				  //alert(daily_start_datee);
+				jQuery.ajax({
+					 type : "post",
+					 url : custom_ajax.ajaxurl,
+					 data : {action: "disable_dates",  start_date: daily_start_datee, end_date: daily_end_datee },
+					 success: function(response) {
+						if(response == 'false'){
+							console.log(response);
+							jQuery(".error_msg").append("This date is not available please select any other date");
+							jQuery('#free_date_timepicker_start').val(" ");
+							jQuery('#free_date_timepicker_end').val(" ");					
+						}else if(response == '1'){
+							jQuery(".error_msg").append("This date is not available please select any other date");
+							jQuery('#free_date_timepicker_start').val(" ");
+							jQuery('#free_date_timepicker_end').val(" ");		
+						}
+						else if(response == '0'){
+							jQuery(".error_msg").append("This date is not available please select any other date");
+							jQuery('#free_date_timepicker_start').val(" ");
+							jQuery('#free_date_timepicker_end').val(" ");		
+						}
+						else{
+							console.log(response);
+						}
+									
+					 }
+				});
+			  }
+			 // e.preventDefault();
+			}
 		
 	});
 	
@@ -49,7 +87,8 @@ jQuery(document).ready(function( $ ) {
 	jQuery('#hourly_datetimepicker_start').datetimepicker({
 		minDate: 0,
 		minDateTime: minDateTime,
-		todayButton: true,
+		defaultSelect: false,
+		todayButton: false,
     });	
 	
 	jQuery("#hourly_datetimepicker_start").change(function(){
@@ -60,7 +99,43 @@ jQuery(document).ready(function( $ ) {
 		jQuery('#hourly_datetimepicker_end').datetimepicker({
 			minDate: 0,
 			minDateTime: hour_start_date,
-			todayButton: true,
+			defaultSelect: false,
+			todayButton: false,
+			onSelectTime:function(ct,$i){
+			console.log($i);
+			  var daily_start_datee =  jQuery('#hourly_datetimepicker_start').val();
+			  var daily_end_datee =  jQuery('#hourly_datetimepicker_end').val();
+			  if(daily_end_datee != ""){
+				  //alert(daily_start_datee);
+				jQuery.ajax({
+					 type : "post",
+					 url : custom_ajax.ajaxurl,
+					 data : {action: "disable_dates",  start_date: daily_start_datee, end_date: daily_end_datee },
+					 success: function(response) {
+						if(response == 'false'){
+							console.log(response);
+							alert("This date is not available please select any other date");
+							jQuery('#hourly_datetimepicker_start').val(" ");
+							jQuery('#hourly_datetimepicker_end').val(" ");					
+						}else if(response == '1'){
+							alert("This date is not available please select any other date");
+							jQuery('#hourly_datetimepicker_start').val(" ");
+							jQuery('#hourly_datetimepicker_end').val(" ");		
+						}
+						else if(response == '0'){
+							alert("This date is not available please select any other date");
+							jQuery('#hourly_datetimepicker_start').val(" ");
+							jQuery('#hourly_datetimepicker_end').val(" ");		
+						}
+						else{
+							console.log(response);
+						}
+									
+					 }
+				});
+			  }
+			 // e.preventDefault();
+			}	
 		});	
 	});
 	
@@ -91,7 +166,9 @@ jQuery(document).ready(function( $ ) {
 	jQuery('#daily_datetimepicker_start').datetimepicker({
 		minDate: 0,
 		minDateTime: minDateTime,
-		todayButton: true,
+		defaultSelect: false,
+		todayButton: false,
+		//todayButton: true,
 		onSelectTime:function(ct,$i){
 			console.log($i);
 		  var daily_start_datee =  jQuery('#daily_datetimepicker_start').val();
@@ -108,7 +185,14 @@ jQuery(document).ready(function( $ ) {
 						alert("This date is not available please select any other date");
 						jQuery('#daily_datetimepicker_start').val(" ");
 						jQuery('#daily_datetimepicker_end').val(" ");					
-					} 
+					}else if(response == '1'){
+						alert("This date is not available please select any other date");
+						jQuery('#daily_datetimepicker_start').val(" ");
+						jQuery('#daily_datetimepicker_end').val(" ");		
+					}
+					else{
+						console.log(response);
+					}
 								
 				 }
 			});
@@ -171,7 +255,38 @@ jQuery(document).ready(function( $ ) {
 	jQuery('#monthly_datetimepicker_start').datetimepicker({
 		minDate: 0,
 		minDateTime: minDateTime,
-		todayButton: true,
+		defaultSelect: false,
+		todayButton: false,
+		onSelectTime:function(ct,$i){
+			console.log($i);
+		  var daily_start_datee =  jQuery('#monthly_datetimepicker_start').val();
+		  var daily_end_datee =  jQuery('#monthly_datetimepicker_end').val();
+		  if(daily_end_datee != ""){
+			  //alert(daily_start_datee);
+		    jQuery.ajax({
+				 type : "post",
+				 url : custom_ajax.ajaxurl,
+				 data : {action: "disable_dates",  start_date: daily_start_datee, end_date: daily_end_datee },
+				 success: function(response) {
+					if(response == 'false'){
+						console.log(response);
+						alert("This date is not available please select any other date");
+						jQuery('#monthly_datetimepicker_start').val(" ");
+						jQuery('#monthly_datetimepicker_end').val(" ");					
+					}else if(response == '1'){
+						alert("This date is not available please select any other date");
+						jQuery('#monthly_datetimepicker_start').val(" ");
+						jQuery('#monthly_datetimepicker_end').val(" ");		
+					}
+					else{
+						console.log(response);
+					}
+								
+				 }
+			});
+		  }
+		 // e.preventDefault();
+		}	
     });
 	jQuery("#monthly_datetimepicker_start").change(function(){
 		var monthly_start_date =  jQuery('#monthly_datetimepicker_start').val();

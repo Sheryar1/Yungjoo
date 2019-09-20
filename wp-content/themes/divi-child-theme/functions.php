@@ -47,8 +47,8 @@ function ch_enqueue_scripts() {
 	
 	wp_localize_script('custom_js', 'custom_ajax', array('ajaxurl' =>admin_url('admin-ajax.php')));
 	if(is_account_page() || is_page('my-account/booking-details/') || is_page('my-account/invitation_details/') ){
-		wp_register_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
-		wp_enqueue_style('bootstrap4');
+		//wp_register_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
+		//wp_enqueue_style('bootstrap4');
     } 
 	
 
@@ -229,12 +229,20 @@ function ch_save_booking_data($order_id ){
 		// get num of hour in end date
 		$end_hours = 24 - $start_hours;
 		
+		
+		
 		//get all dates between 2 dates
 		$period = new DatePeriod(
 			 new DateTime($meeting_start),
 			 new DateInterval('P1D'),
 			 new DateTime($meeting_end)
 		);
+		
+		if($start_date_only == $end_date_only ){
+			$dates_array = array($start_date_only => $hours);
+			//var_dump($dates_array);
+		}
+		else{
 		
 		// get all dates/hours and add into array in dates => hours pairs
 		$dates_array = array();
@@ -262,7 +270,7 @@ function ch_save_booking_data($order_id ){
 		//$end_date_array = array($end_date_only => $end_hours);
 		//array_push($dates_array, $end_date_array);
 		//var_dump($dates_array); 
-		
+		}
 	
 	//exit();
 	// Api req
@@ -625,9 +633,7 @@ function save_invites_data(){
 		}
 		
 	}
-	
-		
-	
+
 	wp_die();
 }
 function ch_add_admin_page(){
@@ -672,12 +678,23 @@ function get_daily_hours(){
 }
 
 function ch_hours_per_day(){
-	
-	echo '<h1>Hours per day</h1>';
+	if(isset($_POST['submitted'])){
+		$hours_limit = $_POST['hours_limit'];
+		$get_hours_limit = get_post_meta(1001, 'hours_limit', true);
+		//var_dump($get_hours_limit);
+		if(empty($get_hours_limit)){
+			add_post_meta( 1001, 'hours_limit', $hours_limit );
+		}else{
+			update_post_meta( 1001, 'hours_limit', $hours_limit );
+		}
+		
+	}
+	$get_hours_limit = get_post_meta(1001, 'hours_limit', true);
+	//echo '<h1>Hours per day</h1>';
 	?>
-	<form action="" method="get">
-		<input type="text" id="hours_limit" name="hours_limit" value="72">
-		<input type="submit" value="Save">
+	<form action="<?php echo get_permalink() ?>" method="post">
+		<input type="text" id="hours_limit" name="hours_limit" value="<?php echo $get_hours_limit; ?>">
+		<input type="submit" value="Save" name="submitted">
 	</form>
 	<?php
 			$final_arr = get_daily_hours();
@@ -712,10 +729,11 @@ function ch_hours_per_day(){
 //}
 
 function get_all_disabled_dates(){
+	$get_hours_limit = get_post_meta(1001, 'hours_limit', true);
 	$disable_dates = array();
 		$all_dates = get_daily_hours();
 		foreach($all_dates as $key => $value){
-			if($value >= '72'){
+			if($value >= $get_hours_limit){
 				$origDate = $key;
  
 				$newDate = date("d.m.Y", strtotime($origDate));
@@ -731,7 +749,7 @@ add_action('wp_footer', 'add_this_script_footer');
 function add_this_script_footer(){ 
 
 		$disable_dates = get_all_disabled_dates();
-		var_dump(json_decode($disable_dates, true));
+		//var_dump(json_decode($disable_dates, true));
 ?>
 	
 	<script type="text/javascript">
@@ -751,7 +769,7 @@ add_action("wp_ajax_nopriv_disable_dates", "disable_dates");
 function disable_dates(){
 	$meeting_start = $_POST['start_date'];
 	$meeting_end = $_POST['end_date'];
-	
+	$get_hours_limit = get_post_meta(1001, 'hours_limit', true);
 		// get start date
 		$start_date_only = new DateTime($meeting_start);
 		$start_date_only = $start_date_only->format('Y-m-d');
@@ -771,6 +789,9 @@ function disable_dates(){
 		$interval = $datetime1->diff($datetime2);
 		$start_hours = $interval->format('%h');
 		
+		// get num of hour in end date
+		$end_hours = 24 - $start_hours;
+		
 		//get all dates between 2 dates
 		$period = new DatePeriod(
 			 new DateTime($meeting_start),
@@ -778,41 +799,87 @@ function disable_dates(){
 			 new DateTime($meeting_end)
 		);
 		
+		if($start_date_only == $end_date_only){
+			// get total num of hours between 2 dates
+			$date1 = new DateTime($meeting_start);
+			$date2 = new DateTime($meeting_end);
+			$diff = $date2->diff($date1);
+			$hours = $diff->h;
+			$hours = $hours + ($diff->days*24);
+			
+			$all_dates = get_daily_hours();
+				
+				foreach($all_dates as $key => $value){
+					if($key == $start_date_only){
+						$hourly_limit  = $hours + $value;
+						if($hourly_limit >= $get_hours_limit){
+							echo '0';
+						}
+					}
+				}
+		}
+	else{
+		
 		$dates_array = array();
-		$counter = '0';
 		
 		foreach ($period as $key => $value) {
-			
 			//var_dump($value);
 			$dates_array[] = $value->format('d.m.Y')	;	
 			$counter ++;			
 		}
 		
+		// get all dates/hours and add into array in dates => hours pairs
+		$dates_array_compare = array();
+		$counter = '0';
+		
+		foreach ($period as $key => $value) {
+			
+			if($counter == 0){
+				$dates_array_compare[$value->format('Y-m-d')] = $start_hours;
+			}
+			else{
+				$dates_array_compare[$value->format('Y-m-d')] = 24; 	
+			}
+			if ($value == end($period) ) {
+				$dates_array_compare[$end_date_only] = $end_hours;
+			}
+			
+			$counter ++;			
+		}
+		ksort($dates_array_compare);
+		//var_dump($dates_array_compare);
+		
 		$disable_dates = get_all_disabled_dates();
 		$new_disable_dates = json_decode($disable_dates, true);
-		//var_dump($dates_array);
+		
 		$result = array_diff($dates_array,$new_disable_dates);
 		if(!empty($result)){
 			if($dates_array == $result){
-				echo "true";
+				$all_dates = get_daily_hours();
+				//var_dump($all_dates);
+				$empty_arr = array();
+				foreach($all_dates as $key => $value){
+					
+					foreach($dates_array_compare as $key2 => $value2 ){
+						if($key == $key2){
+							$sum_value = $value + $value2;
+							
+							if($sum_value >= $get_hours_limit){
+							$empty_arr[$key]= $sum_value;
+							}
+						}
+					}
+					
+				}
+				if(!empty($empty_arr)){
+					echo '1';
+				}
+				
 			}
 			else{
 				echo "false";
 			}
 		}
-		
-	$all_dates = get_daily_hours();
-		foreach($all_dates as $key => $value){
-			if($key == $start_date_only){
-				$sum_value = $value + $start_hours;
-				if($sum_value >= '72'){
-					//echo "false";
-				}else{
-					//echo "true";
-				}
-			}
-		}	
-
-	
+	}
 	die();
 }
