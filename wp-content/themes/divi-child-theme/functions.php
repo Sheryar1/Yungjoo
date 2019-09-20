@@ -47,9 +47,9 @@ function ch_enqueue_scripts() {
 	
 	wp_localize_script('custom_js', 'custom_ajax', array('ajaxurl' =>admin_url('admin-ajax.php')));
 	if(is_account_page() || is_page('my-account/booking-details/') || is_page('my-account/invitation_details/') ){
-		//wp_register_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
-		//wp_enqueue_style('bootstrap4');
-    } 
+        wp_register_style('bootstrap4', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css');
+        wp_enqueue_style('bootstrap4');
+   }
 	
 
 }
@@ -349,7 +349,7 @@ function ch_save_booking_data($order_id ){
 		}		
 }
 
-//add_action( 'woocommerce_thankyou', 'bbloomer_redirectcustom');
+add_action( 'woocommerce_thankyou', 'bbloomer_redirectcustom');
   
 function bbloomer_redirectcustom( $order_id ){
     $order = wc_get_order( $order_id );
