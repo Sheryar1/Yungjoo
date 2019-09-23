@@ -173,3 +173,10 @@ div#top-header {
     font-size: 14px;
     padding: 13px;
 }
+
+}
+@media only screen and (max-width: 600px) {
+	.mobile_menu_bar:before{
+		color: #e14454 !important;
+	}
+}
