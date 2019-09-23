@@ -2,7 +2,7 @@
 Contributors: strackerphil-1
 Tags: popup, marketing, divi
 Requires at least: 3.0.1
-Tested up to: 5.2.2
+Tested up to: 5.2.3
 Stable tag: trunk
 Requires PHP: 5.2.4
 License: GPLv2 or later
@@ -135,6 +135,21 @@ This onboarding notice is displayed to administrator users only. Once the user c
 
 You can also globally disable the onboarding notice by defining the constant [`DISABLE_NAG_NOTICES`](https://codex.wordpress.org/Plugin_API/Action_Reference/admin_notices#Disable_Nag_Notices) in your wp-config.php or themes function.php
 
+= I need to revert to an older version =
+
+When you experience any problems with the plugin, I would love you to first head over to the [support forum](https://wordpress.org/support/plugin/popups-for-divi/) and briefly share your issue with me.
+
+Here's how you can revert to an older version of the plugin:
+
+1. Go to the [Advanced View](https://wordpress.org/plugins/popups-for-divi/advanced/) Page and scroll down to the bottom.
+2. Pick your version and click "Download" (you can choose any version since 1.5.1)
+3. Now go to your wp-admin Panel and open the Plugins list
+4. Deactivate and Delete the Popups for Divi plugin! *Note: You will not lose any data, but while the plugin is deactivated/missing your Popups might be visible like normal page content.*
+5. On the Plugins page click "Add New" button in the top and then click on "Upload Plugin"
+6. Select the .zip file which you downloaded in Step 2 and upload it. Activate and you're done!
+
+Alternatively you can replace the `popups-for-divi` folder via FTP: Extract the .zip file which you downloaded in Step 2 and upload it to your `/wp-content/plugins` folder.
+
 = I have more questions or need help =
 
 Please first visit the [**plugin website**](https://philippstracker.com/divi-popup/), as it includes examples and documentation that could answer your questions.
@@ -153,9 +168,20 @@ We cannot provide customization and development via the forum. If you need that,
 4. That's all. Save the page and open it up without the editor. All popups are initially hidden.
 5. Click on the "Contact" button displays the popup. You can style the Divi section (change the width, background-color, etc) or customize the CSS of the popup...
 6. ...check out the extensive API documentation and popup samples on philippstracker.com
-7. Our free email course walks you through every aspect of the plugin - from the basics to advances use-cases and techniques.
+7. Our free email course walks you through every aspect of the plugin - from the basics to advanced use-cases and techniques.
 
 == Changelog ==
+
+= 1.6.3 =
+* Fix animation glitch in Safari/iPhone that displayed the Popup too small when using Divis "Zoom" open animation.
+* Fix logic that did not recognize Popups with upper-case letters in the Popup IDs.
+* Fix issue with transparent Popup background.
+* Fix CSS rule that allows custom box-shadow styles.
+
+= 1.6.2 =
+* Fix JS error in front.js
+
+Plugin tested with WordPress 5.2.3 and Divi 3.27.4
 
 = 1.6.0 =
 * Change Popup behavior: The size now matches the width of your Divi section! 🤩
@@ -180,8 +206,6 @@ We cannot provide customization and development via the forum. If you need that,
 * Fixed the exit-intent behavior - now it triggers, even when you move the mouse very sloooowly
 * New JS API to turn literally *any* element on the page into a popup: `DiviPopup.register('#the-id')`
 * New JS API to configure popups after they were registered: `DiviPopup.config('#the-id', 'on-mobile', false)`
-
-Plugin tested with WordPress 5.2.2 and Divi 3.27.1
 
 = 1.4.0 =
 * In Divis Visual Builder you now see each popup ID right above the popup. This makes it easier for you to correctly link popups

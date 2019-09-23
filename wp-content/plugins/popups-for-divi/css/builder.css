@@ -16,7 +16,7 @@
   #et-fb-app .et_pb_section.popup:after {
     content: '';
     position: absolute;
-    background: rgba(0, 0, 0, 0.2);
+    background: #ccc;
     left: 50%;
     top: -30px;
     bottom: -30px;

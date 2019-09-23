@@ -38,7 +38,7 @@ class Popups_For_Divi {
 
 		add_action(
 			'wp_enqueue_scripts',
-			array( $this, 'enqueue_scripts' )
+			array( $this, 'enqueue_js_library' )
 		);
 
 		// Load the onboarding wizard.
@@ -94,7 +94,7 @@ class Popups_For_Divi {
 	 *
 	 * @since  1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_js_library() {
 		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 			return;
 		}
@@ -110,7 +110,7 @@ class Popups_For_Divi {
 
 		if ( function_exists( 'et_fb_is_enabled' ) ) {
 			$is_divi_v3 = true;
-			add_filter( 'evr_divi_popup-build_mode', 'et_fb_is_enabled' );
+			add_filter( 'divi_popup_build_mode', 'et_fb_is_enabled' );
 		} else {
 			$is_divi_v3 = false;
 		}
@@ -360,21 +360,26 @@ class Popups_For_Divi {
 		 */
 		$config['debug'] = defined( WP_DEBUG ) ? WP_DEBUG : false;
 
-		// -- End of default configuration.
+		/* -- End of default configuration -- */
+
+		// Compatibility with older Popups for Divi version.
 		$js_data = apply_filters( 'evr_divi_popup-js_data', $config ); // phpcs:ignore
 
-		if ( apply_filters( 'evr_divi_popup-build_mode', false ) ) { // phpcs:ignore
+		// Divi Areas Pro filter.
+		$js_data = apply_filters( 'divi_areas_js_data', $config );
+
+		if ( apply_filters( 'divi_popup_build_mode', false ) ) {
 			$base_name  = 'builder';
 			$inline_css = '';
 		} else {
 			$base_name  = 'front';
 			$inline_css = sprintf(
-				'.et_pb_section%s{display:none}',
+				'%s{display:none}',
 				$js_data['popupSelector']
 			);
 		}
 
-		if ( $js_data['debug'] ) {
+		if ( $js_data['debug'] || ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ) {
 			$cache_version .= '-' . time();
 		}
 

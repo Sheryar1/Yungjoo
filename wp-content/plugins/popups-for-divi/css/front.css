@@ -10,8 +10,11 @@
   background: rgba(0, 0, 0, 0.55);
   z-index: 99; }
 
-.popup:not(.no-shadow) {
-  box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 2px 50px 2px rgba(0, 0, 0, 0.2); }
+.popup {
+  box-shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.3), 0 2px 50px 2px rgba(0, 0, 0, 0.2);
+  background-color: #fff; }
+  .popup.divi-area-wrap {
+    background-color: transparent; }
 
 .popup_outer_wrap {
   position: fixed;
@@ -51,8 +54,10 @@
     max-height: 100%;
     pointer-events: all; }
     .popup_outer_wrap .popup.with-loader {
-      background-image: url(../img/spin.gif), radial-gradient(circle at center, #FFF 65%, #fff0 66%);
+      background-image: url(../img/spin.gif), radial-gradient(circle at center, #FFF 65%, #fff0 66%) !important;
       background-size: 32px 32px, 48px 48px; }
+    .popup_outer_wrap .popup.no-shadow {
+      box-shadow: none; }
     .popup_outer_wrap .popup .et_pb_row:after,
     .popup_outer_wrap .popup .et_pb_row_inner:after,
     .popup_outer_wrap .popup .et_pb_slides:after,
