@@ -179,4 +179,24 @@ div#top-header {
 	.mobile_menu_bar:before{
 		color: #e14454 !important;
 	}
+	div#top-header{
+		padding-top:10px;
+	}
+	#et-secondary-menu, #et-secondary-nav {
+		display: block !important;
+	}
+	.et_mobile_menu{
+		border-top: 3px solid #e14454 !important;
+	}
+	.mybtn a{
+		background: #e14454 !important;
+		color: #ffffff !important;
+	}
+	.footer-widget ul li::before{
+		display:none;
+	}
+	#main-footer {
+		padding-top: 30px;
+	}
+	
 }
