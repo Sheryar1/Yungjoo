@@ -951,10 +951,10 @@ function sv_add_email_register_section( $order, $sent_to_admin, $plain_text ) {
 		ob_start(); 
 	  
 		?>
-		<h3 style="text-align: center;">Save Time on Every Order</h3>
+		<h3 style="text-align: center;">View Booking Details</h3>
 		<div style="text-align: center; margin-bottom: 2em;">
-			<p>Want us to remember you for next time? You can easily register an account to set preferred shipping and billing addresses, securely save payment methods, and view your complete purchase history. It takes less than 20 seconds, and will make shopping fabulously easy!</p>
-			<a href="<?php echo $my_account_url . '?email=' . urlencode( $order->billing_email ); ?>" style="border: 2px solid #a46497; border-radius: 5px; max-width: 400px; margin: 0.5em auto; padding: 10px 30px; text-decoration: none;">Create My Account</a>
+			<!---<p>Want us to remember you for next time? You can easily register an account to set preferred shipping and billing addresses, securely save payment methods, and view your complete purchase history. It takes less than 20 seconds, and will make shopping fabulously easy!</p> --->
+			<a href="<?php echo $my_account_url . 'booking-details/'; ?>" style="border: 2px solid #a46497; border-radius: 5px; max-width: 400px; margin: 0.5em auto; padding: 10px 30px; text-decoration: none;">Booking Details</a>
 		</div>
 		<?php
 		
