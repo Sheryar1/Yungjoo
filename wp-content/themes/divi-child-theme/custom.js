@@ -148,7 +148,7 @@ jQuery(document).ready(function( $ ) {
 		var end_hour = h_enddate.getHours();
 		var hour_diff = end_hour - start_hour;
 		
-		if(h_start_date != "" || h_end_date != ""){  
+		if(h_start_date != "" && h_end_date != ""){  
 			var hourly_url = jQuery(this).attr('href');
 			var hourly_start_date = hourly_url.replace("f_s_date", h_start_date);
 			var hourly_end_date = hourly_start_date.replace("f_e_date", h_end_date);

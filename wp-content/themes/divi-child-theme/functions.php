@@ -911,3 +911,31 @@ function my_login_redirect( $redirect_to, $request, $user ) {
     }
 }
 add_filter( 'login_redirect', 'my_login_redirect', 10, 3 );
+
+add_action( 'woocommerce_email_after_order_table', 'add_link_back_to_order', 10, 2 );
+function add_link_back_to_order( $order, $is_admin ) {
+
+	// Only for admin emails
+	if ( ! $is_admin ) {
+		return;
+	}
+
+	// Open the section with a paragraph so it is separated from the other content
+	$link = '<p>';
+
+	// Add the anchor link with the admin path to the order page
+	$link .= '<a href="'. admin_url( 'post.php?post=' . absint( $order->id ) . '&action=edit' ) .'" >';
+
+	// Clickable text
+	$link .= __( 'Click here to go to the booking page', 'Divi' );
+
+	// Close the link
+	$link .= '</a>';
+
+	// Close the paragraph
+	$link .= '</p>';
+
+	// Return the link into the email
+	echo $link;
+
+}
