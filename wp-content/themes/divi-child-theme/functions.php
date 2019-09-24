@@ -939,3 +939,25 @@ function add_link_back_to_order( $order, $is_admin ) {
 	echo $link;
 
 }
+function sv_add_email_register_section( $order, $sent_to_admin, $plain_text ) {
+	$my_account_url = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
+	// bail if the account page endpoint isn't set or if this is an admin email
+	if ( ! $my_account_url || $sent_to_admin ) {
+		return;
+	}
+	// only add this section for guest users who will return false
+	
+		
+		ob_start(); 
+	  
+		?>
+		<h3 style="text-align: center;">Save Time on Every Order</h3>
+		<div style="text-align: center; margin-bottom: 2em;">
+			<p>Want us to remember you for next time? You can easily register an account to set preferred shipping and billing addresses, securely save payment methods, and view your complete purchase history. It takes less than 20 seconds, and will make shopping fabulously easy!</p>
+			<a href="<?php echo $my_account_url . '?email=' . urlencode( $order->billing_email ); ?>" style="border: 2px solid #a46497; border-radius: 5px; max-width: 400px; margin: 0.5em auto; padding: 10px 30px; text-decoration: none;">Create My Account</a>
+		</div>
+		<?php
+		
+		echo ob_get_clean();
+}
+add_action( 'woocommerce_email_order_meta', 'sv_add_email_register_section', 50, 3 );
