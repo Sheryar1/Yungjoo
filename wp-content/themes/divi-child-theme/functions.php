@@ -432,6 +432,7 @@ function ch_booking_details_content() {
 				<th>Name</th>
 				<th>Meeting Start DateTime</th>
 				<th>Meeting End DateTime</th>
+				<th>Price</th>
 				<th>Join</th>
 				<th>Invite</th>
 			</tr>
@@ -448,10 +449,13 @@ function ch_booking_details_content() {
 			$participant_url = $booking_value->participant_url;
 			
 			$event_name = '';
+			$event_price = '';
 			$order = new WC_Order( $event_id );
 			$items = $order->get_items();
+			
 			foreach($items as $k=>$val){
 				$event_name = $val['name'];
+				$event_price = $val['total'];
 			}
 			$user = get_userdata($current_user);
 			$user_name = $user->data->display_name;
@@ -475,6 +479,7 @@ function ch_booking_details_content() {
 					<td><?php echo $event_name; ?></td>
 					<td><?php echo $meeting_start; ?></td>
 					<td><?php echo $meeting_end; ?></td>
+					<td>$<?php echo $event_price; ?></td>
 					<td><?php echo $join_url; ?></td>
 					<td><a id ="participant_popup" class="modal-toggle" >Invite</a></td>
 				</tr>
