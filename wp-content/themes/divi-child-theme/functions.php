@@ -455,14 +455,27 @@ function ch_booking_details_content() {
 			}
 			$user = get_userdata($current_user);
 			$user_name = $user->data->display_name;
+			$join_url = '';
 			if($current_user == $user_id){
 				//var_dump($host_url);
+				
+				$start_date = new DateTime();
+				
+				$since_start = $start_date->diff(new DateTime($meeting_start));
+				
+				
+				if($since_start->h == 0 && $since_start->i == 10){
+					$join_url = '<a href="'.$host_url.'&userId='.$user_id.'&nickName='.$user_id.'" target="_blank">Join</a>';
+				}else{
+					$join_url = '<a href="#">Join</a>';
+				}
+				
 				?>
 				<tr>
 					<td><?php echo $event_name; ?></td>
 					<td><?php echo $meeting_start; ?></td>
 					<td><?php echo $meeting_end; ?></td>
-					<td><a href="<?php echo $host_url; ?>&userId=<?php echo $user_id; ?>&nickName=<?php echo $user_id; ?>" target="_blank">Join</a></td>
+					<td><?php echo $join_url; ?></td>
 					<td><a id ="participant_popup" class="modal-toggle" >Invite</a></td>
 				</tr>
 				<?php
